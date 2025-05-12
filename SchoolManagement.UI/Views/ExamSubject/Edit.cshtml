@@ -1,0 +1,38 @@
+﻿@model SchoolManagement.Core.Entites.Models.ExamSubject
+
+@{
+    ViewData["Title"] = "Edit Exam Subject";
+}
+
+
+<h2>Edit Exam Subject</h2>
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label asp-for="Exam.ExamId">Exam Id</label>
+        <input asp-for="Exam.ExamId" class="form-control" />
+        <span asp-validation-for="Exam.ExamId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Exam.ExamName">Exam Name</label>
+        <input asp-for="Exam.ExamName" class="form-control" />
+        <span asp-validation-for="Exam.ExamName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label>Exam Date</label>
+        <input asp-for="Exam.ExamDate" type="date" class="form-control" />
+        <span asp-validation-for="Exam.ExamDate" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="SubjectId">Subject Id</label>
+        <input asp-for="SubjectId" class="form-control" />
+        <span asp-validation-for="SubjectId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Subject.SubjectName">Subject Name</label>
+        <input asp-for="Subject.SubjectName" class="form-control" />
+        <span asp-validation-for="Subject.SubjectName" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</form>

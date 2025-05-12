@@ -1,0 +1,31 @@
+﻿@model List<SchoolManagement.Core.Entites.Models.StudentClassHistory>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-warning">No class history found.</div>
+}
+else
+{
+    <h5>Previous Class History</h5>
+    <table class="table table-bordered">
+        <thead class="table-secondary">
+            <tr>
+                <th>Class Name</th>
+                <th>Academic Year</th>
+                <th>Enrollment Date</th>
+                <th>Completion Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Class.ClassName</td>
+                    <td>@item.AcademicYear</td>
+                    <td>@item.EnrollmentDate.ToShortDateString()</td>
+                    <td>@(item.CompletionDate?.ToShortDateString() ?? "-")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

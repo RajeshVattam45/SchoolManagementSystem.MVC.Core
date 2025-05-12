@@ -1,0 +1,58 @@
+﻿
+/* Apply a full-page background with a subtle transparent overlay */
+body {
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('/images/background.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    animation: fadeInBackground 1s ease-in-out;
+}
+
+@keyframes fadeInBackground {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Transparent card style for the form container */
+.transparent-card {
+    background-color: rgba(255, 255, 255, 0.85);
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 1.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Focus and hover effects for inputs */
+.form-control:focus {
+    border-color: #5cb85c;
+    box-shadow: 0 0 8px rgba(92, 184, 92, 0.6);
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+/* Button style with a subtle hover effect */
+.btn-primary {
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+    .btn-primary:hover {
+        background-color: #4cae4c;
+        transform: scale(1.05);
+    }

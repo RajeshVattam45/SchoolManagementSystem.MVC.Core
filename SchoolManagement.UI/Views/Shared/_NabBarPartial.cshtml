@@ -1,0 +1,258 @@
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+<link rel="stylesheet" href="~/css/navbar.css" />
+
+@{
+    var userEmail = HttpContextAccessor.HttpContext.Session.GetString("UserEmail");
+    var userRole = HttpContextAccessor.HttpContext.Session.GetString("UserRole");
+    var userId = HttpContextAccessor.HttpContext.Session.GetString("UserId");
+}
+
+<!-- Branding or Logo -->
+<a class="navbar-brand fw-bold text-light" href="/">
+    Home
+</a>
+
+<div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+        <ul class="navbar-nav flex-grow-1">
+            @if (userEmail != null)
+            {
+                if (userRole == "Admin" || userRole == "Teacher")
+                {
+                    <!-- Full Navigation for Admin and Employee -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link fw-bold text-light" href="#" id="studentDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Students
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="studentDropdown">
+                            <li>
+                                <a class="dropdown-item fw-bold text-dark" asp-controller="Student" asp-action="StudentList">
+                                    View All Students
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link fw-bold text-light" href="#" id="subjectsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Class Subjects
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="subjectsDropdown">
+                            <li>
+                                <a class="dropdown-item fw-bold text-dark" asp-controller="ClassSubject" asp-action="Assign">
+                                    Assign subjects to class
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item fw-bold text-dark" asp-controller="ClassSubject" asp-action="AssignedList">
+                                    View list of subjects
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link fw-bold text-light" href="#" id="employeesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Employees
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="employeesDropdown">
+                            <li>
+                                <a class="dropdown-item fw-bold text-dark" asp-controller="Employee" asp-action="Index">
+                                    View All Employees
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item fw-bold text-dark" asp-controller="Employee" asp-action="Create">
+                                    Register Employee
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link fw-bold text-light" href="#" id="classesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Classes
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="classesDropdown">
+                            <li>
+                                <a class="dropdown-item fw-bold text-dark" asp-controller="Class" asp-action="Index">
+                                    Manage Classes
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item fw-bold text-dark" asp-controller="Class" asp-action="Create">
+                                    Create Class
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Additional menu items for Admin/Employee -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link fw-bold text-light" href="#" id="subjectsManagementDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Subjects
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="subjectsManagementDropdown">
+                            <li>
+                                <a class="dropdown-item fw-bold text-dark" asp-controller="Subject" asp-action="Index">
+                                    Manage Subjects
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item fw-bold text-dark" asp-controller="Subject" asp-action="Create">
+                                    Create Subject
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link fw-bold text-light" href="#" id="examDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Exams
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="examDropdown">
+                            <li>
+                                <a class="dropdown-item fw-bold text-dark" asp-controller="Exam" asp-action="Index">
+                                    Manage Exams
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item fw-bold text-dark" asp-controller="ExamType" asp-action="Index">
+                                    Manage Exam Types
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item fw-bold text-dark" asp-controller="ExamSubject" asp-action="Index">
+                                    Manage Exam Subjects
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item fw-bold text-dark" asp-controller="ExamScheduleMvc" asp-action="Index">
+                                    Schedule Exam
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link fw-bold text-light" href="#" id="attendanceDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Attendance
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="attendanceDropdown">
+                            <li>
+                                <a class="dropdown-item fw-bold text-dark" asp-controller="StudentAttendance" asp-action="Index">
+                                    Student Attendance
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item fw-bold text-dark" asp-controller="EmployeeAttendance" asp-action="Index">
+                                    Employee Attendance
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link fw-bold text-light" href="#" id="marksDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Marks
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="marksDropdown">
+                            <li>
+                                <a class="dropdown-item fw-bold text-dark" asp-controller="Marks" asp-action="DisplayAllMarks">
+                                    Display Student Marks
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item fw-bold text-dark" asp-controller="Marks" asp-action="Register">
+                                    Register Student Marks
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold text-light" asp-controller="Events" asp-action="Index">
+                            Events
+                        </a>
+                    </li>
+                }
+                else if (userRole == "Student")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold text-light" asp-controller="Student" asp-action="Details" asp-route-id="@userId">
+                            Details
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold text-light" asp-controller="StudentAttendance" asp-action="StudentIndividualAttendance">
+                            Attendance
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold text-light" asp-controller="ClassSubject" asp-action="StudentSubjects">
+                            Subjects
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold text-light" asp-controller="Marks" asp-action="Index">
+                            Marks
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold text-light" asp-controller="ExamScheduleMvc" asp-action="Index">
+                            Exams
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold text-light" asp-controller="Class" asp-action="Index">
+                            Classes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold text-light" asp-controller="Events" asp-action="Index">
+                            Events
+                        </a>
+                    </li>
+                    <!-- Change Password Link -->
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold text-light" asp-controller="Student" asp-action="ChangePassword">
+                            Change Password
+                        </a>
+                    </li>
+                }
+            }
+        </ul>
+        <ul class="navbar-nav">
+            @if (userEmail != null)
+            {
+                <li class="nav-item">
+                    <span class="nav-link fw-bold text-white">
+                        Welcome, @userEmail
+                    </span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-bold text-light" asp-controller="Account" asp-action="Logout">
+                        <i class="fas fa-sign-out-alt fw-bold text-light"></i> Logout
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="nav-item">
+                    <a class="nav-link fw-bold text-light" asp-controller="Account" asp-action="Login">
+                        <i class="fas fa-sign-in-alt fw-bold text-light"></i> Login
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+</div>

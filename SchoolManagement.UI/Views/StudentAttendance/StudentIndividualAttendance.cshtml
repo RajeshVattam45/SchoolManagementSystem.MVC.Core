@@ -1,0 +1,120 @@
+﻿@model List<SchoolManagement.Core.ViewModels.DailyAttendance>
+
+@{
+    ViewBag.Title = "Attendance Calendar";
+    var attendanceData = Model.Select(a => new
+    {
+        Date = a.Date.ToString("yyyy-MM-dd"),
+        Status = a.Status?.ToLower()
+    }).ToList();
+    var attendanceJson = System.Text.Json.JsonSerializer.Serialize(attendanceData);
+}
+
+<h2 class="text-center my-4">Attendance Calendar</h2>
+
+<div class="text-center mb-3">
+    <button onclick="changeMonth(-1)" id="prevBtn">⬅️ Previous</button>
+    <strong id="monthLabel" class="mx-3"></strong>
+    <button onclick="changeMonth(1)" id="nextBtn">Next ➡️</button>
+</div>
+
+<div id="calendar" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; max-width: 800px; margin: auto;"></div>
+
+<script>
+    const attendance = @Html.Raw(attendanceJson);
+    const today = new Date();
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
+
+    const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+
+    function renderCalendar(month, year) {
+        const monthLabel = document.getElementById("monthLabel");
+        monthLabel.textContent = `${months[month]} ${year}`;
+        const calendar = document.getElementById("calendar");
+        calendar.innerHTML = "";
+
+        // Add weekday headers
+        const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        weekdays.forEach(day => {
+            calendar.innerHTML += `<div style="font-weight:bold; text-align:center; padding:10px; background:#ddd; border:1px solid #ccc;">${day}</div>`;
+        });
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        const allDates = {};
+        attendance.forEach(a => allDates[a.Date] = a.Status);
+
+        // Add empty slots for previous days
+        for (let i = 0; i < firstDay; i++) {
+            calendar.innerHTML += `<div style="padding:10px;background:#f0f0f0;border:1px solid #ccc;"></div>`;
+        }
+
+        for (let date = 1; date <= daysInMonth; date++) {
+            // Use manual format to prevent timezone shift
+            const fullDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+            const status = allDates[fullDate];
+            let cellStyle = "background:#e0e0e0;color:#000;";
+            let icon = "";
+            let hover = "cursor:pointer;transition:0.3s;";
+
+            if (status === "present") {
+                icon = "✅";
+                cellStyle = "background:#d4edda;border:1px solid #28a745;";
+            } else if (status === "absent") {
+                icon = "❌";
+                cellStyle = "background:#f8d7da;border:1px solid #dc3545;";
+            }
+
+            calendar.innerHTML += `
+                <div style="text-align:center;padding:10px;${cellStyle}${hover}"
+                     onclick="showDetails('${fullDate}', '${status}', '${icon}')"
+                     onmouseover="this.style.transform='scale(1.03)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.2)'"
+                     onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
+                    <div style="font-weight:bold;font-size:18px;color:#000;">${date}</div>
+                    <div style="font-size:22px;">${icon}</div>
+                </div>`;
+        }
+
+        // Disable next button if we're in the current month
+        const isCurrentMonth = (month === today.getMonth() && year === today.getFullYear());
+        document.getElementById("nextBtn").disabled = isCurrentMonth;
+    }
+
+    function changeMonth(direction) {
+        const currentDate = new Date();
+        const maxDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+
+        let newMonth = currentMonth + direction;
+        let newYear = currentYear;
+
+        if (newMonth < 0) {
+            newMonth = 11;
+            newYear--;
+        } else if (newMonth > 11) {
+            newMonth = 0;
+            newYear++;
+        }
+
+        const selectedDate = new Date(newYear, newMonth, 1);
+
+        // Prevent navigating to future months
+        if (selectedDate > maxDate) return;
+
+        currentMonth = newMonth;
+        currentYear = newYear;
+        renderCalendar(currentMonth, currentYear);
+    }
+
+    function showDetails(date, status, emoji) {
+        if (!status) return;
+        const statusText = status === 'present' ? 'Present' : 'Absent';
+        alert(`📅 Date: ${date}\nStatus: ${statusText} ${emoji}`);
+    }
+
+    renderCalendar(currentMonth, currentYear);
+</script>

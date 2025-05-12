@@ -1,0 +1,98 @@
+﻿@model SchoolManagement.Core.ViewModels.BulkAssignViewModel
+
+@{
+    ViewData["Title"] = "Assign Subjects to Class";
+    int? selectedClassId = ViewBag.SelectedClassId as int?;
+}
+
+<div class="container">
+
+    <h2>@ViewData["Title"]</h2>
+
+    <!-- Show any success or error messages -->
+    <div>
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+    </div>
+
+    <form method="post" asp-action="Assign">
+
+        <!-- Select Class -->
+        <div class="form-group">
+            <label for="classId">Select Class</label>
+            <select id="classId" name="classId" class="form-control">
+                <option value="" selected="@(selectedClassId == null ? "selected" : null)">-- Select Class --</option>
+                @foreach (var item in Model.Classes)
+                {
+                    var isSelected = item.ClassId == selectedClassId ? "selected" : null;
+                    <option value="@item.ClassId" selected="@isSelected">@item.ClassName</option>
+                }
+            </select>
+        </div>
+        <!-- Select Subjects -->
+        <div class="form-group">
+            @if (selectedClassId.HasValue)
+            {
+                <h4>Select Subjects</h4>
+                @foreach (var subject in Model.Subjects)
+                {
+                    bool isChecked = false;
+
+                    if (Model.AssignedSubjects.ContainsKey(selectedClassId.Value) &&
+                    Model.AssignedSubjects[selectedClassId.Value].Contains(subject.Id))
+                    {
+                        isChecked = true;
+                    }
+
+                    <div class="form-check">
+                        <input type="checkbox"
+                               class="form-check-input"
+                               id="subject_@subject.Id"
+                               name="selectedSubjects"
+                               value="@subject.Id"
+                        @(isChecked ? "checked" : "") />
+                        <label class="form-check-label" for="subject_@subject.Id">@subject.SubjectName</label>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-muted">Please select a class to assign subjects.</p>
+            }
+
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Assign Subjects</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const classDropdown = document.getElementById('classId');
+        classDropdown.addEventListener('change', function () {
+            const selectedClassId = this.value;
+            if (selectedClassId) {
+                window.location.href = `/ClassSubject/Assign?classId=${selectedClassId}`;
+            } else {
+                window.location.href = `/ClassSubject/Assign`;
+            }
+        });
+    });
+</script>
+
+
+@* <script> *@
+@*     document.addEventListener('DOMContentLoaded', function () { *@
+@*         const classDropdown = document.getElementById('classId'); *@
+@*         classDropdown.addEventListener('change', function () { *@
+@*             const selectedClassId = this.value; *@
+@*             window.location.href = `/ClassSubject/Assign?classId=${selectedClassId}`; *@
+@*         }); *@
+@*     }); *@
+@* </script> *@
+

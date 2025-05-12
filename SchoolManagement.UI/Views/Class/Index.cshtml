@@ -1,0 +1,186 @@
+﻿@model IEnumerable<SchoolManagement.Core.Entites.Models.Class>
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+@{
+    var userEmail = HttpContextAccessor.HttpContext.Session.GetString("UserEmail");
+    var userRole = HttpContextAccessor.HttpContext.Session.GetString("UserRole");
+    var userId = HttpContextAccessor.HttpContext.Session.GetString("UserId");
+
+    bool canEdit = userRole == "Admin" || userRole == "Teacher";
+}
+
+
+@* Show 'Add New Class' button only if Admin or Teacher *@
+@if (canEdit)
+{
+    <!-- About Us Section (Moved Outside the Hero Section) -->
+    <section class="bg-success text-white text-center py-5 mb-5">
+        <div class="container">
+            <h2 class="fw-bold">Manage School Classes</h2>
+            <p class="mx-auto w-75">
+                Below is a list of all academic classes managed by the school.
+                Each class includes key details such as its unique ID, assigned fee structure,
+                and available actions for administration. Use this section to add, update, or remove classes,
+                ensuring smooth coordination of subjects, schedules, and associated staff salaries.
+            </p>
+        </div>
+    </section>
+
+    <a asp-action="Create" class="btn btn-primary mb-4">
+        <i class="bi bi-plus-circle"></i> Add New Class
+    </a>
+}
+else
+{
+    <section class="bg-success text-white text-center py-5 mb-5">
+        <div class="container">
+            <h2 class="fw-bold">Your Class Information</h2>
+            <p class="mx-auto w-75">
+                Here you can view the details of your assigned class, including your class name, ID,
+                and the total fee associated with it. This section gives you a clear overview of your academic
+                grouping and any important information related to your class enrollment.
+            </p>
+        </div>
+    </section>
+}
+
+
+<div class="row d-flex flex-wrap">
+    @foreach (var cls in Model)
+    {
+        <div class="col-md-4 d-flex align-items-stretch p-4">
+            <div class="card custom-card shadow-sm hover-effect w-100 h-100 d-flex flex-column">
+                <div class="card-body text-white d-flex flex-column flex-grow-1">
+                    <h5 class="card-title text-center">@cls.ClassName</h5>
+                    <!-- Underline below the title -->
+                    <div class="title-underline mx-auto mb-3"></div>
+                    <div class="flex-grow-1">
+                        <p class="card-text text-center mt-3">
+                            @if (canEdit)
+                            {
+                                <strong>ID:</strong> @cls.ClassId <br />
+                            }
+
+                            @{
+                                var sectionRooms = new Dictionary<string, string>();
+
+                                switch (cls.ClassId)
+                                {
+                                    case 1:
+                                        sectionRooms["A"] = "Room No 4A";
+                                        break;
+                                    case 2:
+                                        sectionRooms["A"] = "Room No 5A";
+                                        sectionRooms["B"] = "Room No 5B";
+                                        break;
+                                    case 3:
+                                        sectionRooms["A"] = "Room No 5C";
+                                        sectionRooms["B"] = "Room No 5D";
+                                        sectionRooms["C"] = "Room No 6A";
+                                        break;
+                                    case 4:
+                                        sectionRooms["A"] = "Room No 6B";
+                                        sectionRooms["B"] = "Room No 6C";
+                                        sectionRooms["C"] = "Room No 6D";
+                                        break;
+                                    case 5:
+                                        sectionRooms["A"] = "Room No 7A";
+                                        sectionRooms["B"] = "Room No 7B";
+                                        sectionRooms["C"] = "Room No 7C";
+                                        break;
+                                    case 6:
+                                        sectionRooms["A"] = "Room No 8A";
+                                        sectionRooms["B"] = "Room No 8B";
+                                        sectionRooms["C"] = "Room No 8C";
+                                        sectionRooms["D"] = "Room No 8D";
+                                        break;
+                                    case 7:
+                                        sectionRooms["A"] = "Room No 9A";
+                                        sectionRooms["B"] = "Room No 9B";
+                                        sectionRooms["C"] = "Room No 9C";
+                                        sectionRooms["D"] = "Room No 9D";
+                                        break;
+                                    case 8:
+                                        sectionRooms["A"] = "Room No 10A";
+                                        sectionRooms["B"] = "Room No 10B";
+                                        sectionRooms["C"] = "Room No 10C";
+                                        sectionRooms["D"] = "Room No 10D";
+                                        break;
+                                    case 9:
+                                        sectionRooms["A"] = "Room No 11A";
+                                        sectionRooms["B"] = "Room No 11B";
+                                        sectionRooms["C"] = "Room No 11C";
+                                        sectionRooms["D"] = "Room No 11D";
+                                        break;
+                                    case 10:
+                                        sectionRooms["A"] = "Room No 12A";
+                                        sectionRooms["B"] = "Room No 12B";
+                                        sectionRooms["C"] = "Room No 12C";
+                                        sectionRooms["D"] = "Room No 12D";
+                                        break;
+                                }
+
+                                var sectionList = string.Join(", ", sectionRooms.Keys);
+                            }
+
+                            <strong>Available Sections:</strong> @sectionList <br />
+
+                            <strong>Room Assignments:</strong><br />
+                            @foreach (var room in sectionRooms)
+                            {
+                                <span>@room.Key: @room.Value</span>
+
+                                <br />
+                            }
+
+                            <strong>Total Fee:</strong> @cls.TotalFee /Y
+                        </p>
+                    </div>
+
+                    @* Show Edit/Delete buttons only if Admin or Teacher *@
+                    @if (canEdit)
+                    {
+                        <div class="mt-auto d-flex justify-content-center gap-2 mt-4">
+                            <a asp-action="Edit" asp-route-id="@cls.Id" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-pencil-square"></i> Edit
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    /* Dark-themed card styling */
+    .custom-card {
+        background-color: #343a40; /* Dark gray background */
+        border: 1px solid #444; /* Subtle border */
+        border-radius: 8px;
+    }
+
+    /* Hover effect for the cards */
+    .hover-effect {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .hover-effect:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+    /* Underline styling for the card title */
+    .title-underline {
+        width: 60px;
+        height: 3px;
+        background-color: #0d6efd; /* Bootstrap primary color */
+        margin: 8px auto 0; /* Center horizontally and space above */
+        border-radius: 2px;
+    }
+
+    /* Optional spacing utility (if not using Bootstrap 5 gap classes) */
+    .gap-2 > *:not(:last-child) {
+        margin-right: 0.5rem;
+    }
+</style>

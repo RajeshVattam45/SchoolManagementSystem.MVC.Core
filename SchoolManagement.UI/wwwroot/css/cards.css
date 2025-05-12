@@ -1,0 +1,99 @@
+﻿/* ---------------------------------------
+   Card & Overlay Layout
+---------------------------------------- */
+
+/* Keep the card's width responsive; 
+   height can be set to 'maximize' the card. */
+.student-card {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Container for the image. 
+   Set a fixed height to "maximize" the card. */
+.card-img-container {
+    position: relative;
+    width: 100%;
+    height: 350px;
+}
+
+/* Student Image covers the container. */
+.card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Always-visible name overlay at the bottom. */
+.name-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 8px;
+    text-align: center;
+    z-index: 2;
+}
+
+/* The hidden overlay with details, appears on hover. */
+.details-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    z-index: 3;
+}
+
+/* Show the details overlay on card hover. */
+.student-card:hover .details-overlay {
+    opacity: 1;
+}
+
+/* ---------------------------------------
+   Table & Button Group
+---------------------------------------- */
+
+/* Ensure table text is visible on dark overlay. */
+.details-overlay table {
+    color: #fff;
+}
+
+/* Keep table spacing consistent. */
+.table td {
+    padding: 5px 10px;
+    word-break: break-word;
+}
+
+/* Button group alignment. */
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+}
+
+/* ---------------------------------------
+   Custom Buttons
+---------------------------------------- */
+.custom-btn {
+    transition: background 0.3s ease-in-out, transform 0.2s;
+    padding: 8px 15px;
+    font-size: 14px;
+}
+
+    .custom-btn:hover {
+        transform: scale(1.05);
+        filter: brightness(1.2);
+    }

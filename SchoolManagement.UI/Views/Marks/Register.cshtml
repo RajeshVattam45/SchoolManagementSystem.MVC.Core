@@ -1,0 +1,85 @@
+﻿@model List<SchoolManagement.UI.Controllers.MarksEntryViewModel>
+
+@{
+    ViewBag.Title = "Register Marks";
+}
+
+<h2>Register Marks</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+@if (ViewBag.Info != null)
+{
+    <div class="alert alert-info">@ViewBag.Info</div>
+}
+
+<form asp-action="Register" method="get">
+    <div>
+        <label>Class:</label>
+        <select asp-items="ViewBag.Classes" name="classId"></select>
+
+        <label>Exam:</label>
+        <select asp-items="ViewBag.Exams" name="examId"></select>
+
+        <label>Subject:</label>
+        <select asp-items="ViewBag.Subjects" name="subjectId"></select>
+
+        <button type="submit">Load Students</button>
+    </div>
+</form>
+
+@if (Model.Any())
+{
+    <form asp-action="Register" method="post">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Marks Obtained</th>
+                    <th>Max Marks</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @Model[i].StudentName
+                            <input type="hidden" asp-for="@Model[i].StudentId" />
+                            <input type="hidden" asp-for="@Model[i].ExamId" />
+                            <input type="hidden" asp-for="@Model[i].SubjectId" />
+                            <input type="hidden" asp-for="@Model[i].ClassId" />
+                        </td>
+                        <td>
+                            @if (Model[i].IsExistingMark)
+                            {
+                                @Model[i].MarksObtained
+                                <input type="hidden" asp-for="@Model[i].MarksObtained" />
+                            }
+                            else
+                            {
+                                <input asp-for="@Model[i].MarksObtained" class="form-control" />
+                            }
+                        </td>
+                        <td>
+                            @if (Model[i].IsExistingMark)
+                            {
+                                @Model[i].MaxMarks
+                                <input type="hidden" asp-for="@Model[i].MaxMarks" />
+                            }
+                            else
+                            {
+                                <input asp-for="@Model[i].MaxMarks" class="form-control" />
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <button type="submit" class="btn btn-primary">Save / Update Marks</button>
+    </form>
+}

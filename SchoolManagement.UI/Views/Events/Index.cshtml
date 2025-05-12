@@ -1,0 +1,82 @@
+﻿@model List<SchoolManagement.Core.Entites.Models.Events>
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+@{
+    var years = ViewBag.Years as List<int>;
+    var selectedYear = (int)ViewBag.SelectedYear;
+    var searchTerm = Context.Request.Query["search"];
+
+    var userEmail = HttpContextAccessor.HttpContext.Session.GetString("UserEmail");
+    var userRole = HttpContextAccessor.HttpContext.Session.GetString("UserRole");
+    var userId = HttpContextAccessor.HttpContext.Session.GetString("UserId");
+
+    bool canEdit = userRole == "Admin" || userRole == "Teacher";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Events - @selectedYear</h2>
+        @if (canEdit)
+        {
+            <a class="btn btn-primary" asp-action="Create">+ Create New Event</a>
+        }
+    </div>
+
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-3">
+            <label for="yearSelect" class="form-label">Filter by Year:</label>
+            <select name="year" id="yearSelect" class="form-select" onchange="this.form.submit()">
+                @foreach (var y in years)
+                {
+                    <option value="@y" selected="@(y == selectedYear ? "selected" : null)">@y</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label for="search" class="form-label">Search:</label>
+            <input type="text" name="search" id="search" class="form-control" placeholder="Event name or organizer"
+                   value="@searchTerm" />
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-secondary w-100">Apply</button>
+        </div>
+    </form>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning">No events found for @selectedYear.</div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var ev in Model)
+            {
+                <div class="col">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">@ev.EventName</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">@ev.EventDate.ToString("MMM dd, yyyy")</h6>
+                            <p class="card-text">
+                                @(
+                                    ev.EventDescription.Length > 100
+                                    ? ev.EventDescription.Substring(0, 100) + "..."
+                                    : ev.EventDescription
+                                    )
+                            </p>
+                            <p>
+                                <span class="badge bg-info text-dark">Organized by: @ev.OrganizedBy</span>
+                            </p>
+                        </div>
+                        @if(canEdit) {
+                        <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between">
+                            <a class="btn btn-sm btn-outline-info" asp-action="Details" asp-route-id="@ev.Id">Details</a>
+                            <a class="btn btn-sm btn-outline-warning" asp-action="Edit" asp-route-id="@ev.Id">Edit</a>
+                            <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@ev.Id">Delete</a>
+                        </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

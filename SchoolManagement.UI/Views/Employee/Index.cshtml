@@ -1,0 +1,60 @@
+﻿@model IEnumerable<SchoolManagement.Core.Entites.Models.Employee>
+
+@{
+    ViewData["Title"] = "Employee Directory";
+}
+<link rel="stylesheet" href="~/css/Employee.css" />
+<div class="container py-5">
+    <h2 class="text-center mb-4 display-5 fw-bold text-primary">Employee Directory</h2>
+    <div class="accordion" id="employeeAccordion">
+        @foreach (var employee in Model)
+        {
+            <div class="accordion-item mb-3 shadow-sm rounded custom-accordion">
+                <h2 class="accordion-header" id="heading@(employee.Id)">
+                    <button class="accordion-button collapsed custom-accordion-button" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapse@(employee.Id)"
+                            aria-expanded="false"
+                            aria-controls="collapse@(employee.Id)">
+                        <i class="fas fa-user me-2"></i> @employee.FirstName @employee.LastName - @employee.Role
+                    </button>
+                </h2>
+                <div id="collapse@(employee.Id)" class="accordion-collapse collapse" aria-labelledby="heading@(employee.Id)" data-bs-parent="#employeeAccordion">
+                    <div class="accordion-body custom-accordion-body animate__animated animate__fadeIn">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Employee ID:</strong> @employee.EmployeeId</p>
+                                <p><strong>First Name:</strong> @employee.FirstName</p>
+                                <p><strong>Last Name:</strong> @employee.LastName</p>
+                                <p><strong>Phone Number:</strong> @employee.PhoneNumber</p>
+                                <p><strong>Role:</strong> @employee.Role</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Current Address:</strong> @employee.CurrentAddress</p>
+                                <p><strong>Permanent Address:</strong> @employee.PermanentAddress</p>
+                                <p><strong>Pincode:</strong> @employee.Pincode</p>
+                                <p><strong>Salary:</strong> <i class="fas fa-dollar-sign"></i> @employee.EmployeeSalary</p>
+                                @* <p><strong>Type:</strong> @employee.EmployeeType</p> *@
+                                <p><strong>Email:</strong> <i class="fas fa-envelope"></i> @employee.Email</p>
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a asp-action="Edit" asp-controller="Employee" asp-route-id="@employee.Id" class="btn btn-warning btn-sm me-2">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a asp-action="Delete" asp-controller="Employee" asp-route-id="@employee.Id" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash-alt"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="text-center mt-4">
+        <a asp-action="Create" asp-controller="Employee" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus"></i> Add New Employee
+        </a>
+    </div>
+</div>
+

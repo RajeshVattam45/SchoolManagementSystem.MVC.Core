@@ -1,0 +1,64 @@
+﻿@model SchoolManagement.Core.ViewModels.AssignSubjectToExamViewModel
+
+@{
+    ViewData["Title"] = "Assign Subjects to Exam";
+}
+
+<div class="container py-5">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body">
+            <h2 class="mb-4 fw-bold text-primary">
+                <i class="bi bi-bookmark-check-fill me-2"></i> @ViewData["Title"]
+            </h2>
+
+            <form asp-action="Create" method="post">
+                <!-- Select Exam -->
+                <div class="mb-4">
+                    <label asp-for="SelectedExamId" class="form-label fw-semibold">
+                        <i class="bi bi-journal-text me-1"></i> Select Exam
+                    </label>
+                    <select asp-for="SelectedExamId" asp-items="Model.ExamList" class="form-select form-select-lg rounded-3" required>
+                        <option value="">-- Select Exam --</option>
+                    </select>
+                    <span asp-validation-for="SelectedExamId" class="text-danger small"></span>
+                </div>
+
+                <!-- Select Subjects -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold d-block">
+                        <i class="bi bi-book me-1"></i> Select Subjects
+                    </label>
+                    <div class="row row-cols-1 row-cols-md-2 g-3">
+                        @foreach (var subject in Model.Subjects)
+                        {
+                            <div class="col">
+                                <div class="form-check border p-3 rounded-3 shadow-sm bg-light">
+                                    <input type="checkbox"
+                                           name="SelectedSubjectIds"
+                                           value="@subject.Id"
+                                           class="form-check-input"
+                                           id="subject_@subject.Id" />
+                                    <label class="form-check-label fw-medium" for="subject_@subject.Id">
+                                        @subject.SubjectName
+                                    </label>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <span asp-validation-for="SelectedSubjectIds" class="text-danger small"></span>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-success px-4 rounded-pill shadow-sm">
+                        <i class="bi bi-check-circle me-1"></i> Assign
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

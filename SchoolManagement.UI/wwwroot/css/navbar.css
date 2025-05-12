@@ -1,0 +1,13 @@
+﻿
+/* Add underline + orange color on hover for parent link */
+.nav-item.dropdown > .nav-link:hover {
+    text-decoration: underline;
+    text-decoration-color: greenyellow;
+    text-underline-offset: 4px;
+    color: greenyellow !important;
+}
+
+/* Optional: smooth transition */
+.nav-link {
+    transition: all 0.3s ease;
+}

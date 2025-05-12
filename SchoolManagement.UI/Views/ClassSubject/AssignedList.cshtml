@@ -1,0 +1,94 @@
+﻿@model List<SchoolManagement.Core.ViewModels.AssignedSubjectsViewModel>
+@using SchoolManagement.UI.Controllers
+@{
+    ViewData["Title"] = "Assigned Subjects to Classes";
+    var classList = ViewBag.ClassList as List<ClassSubjectController.ClassViewModel>;
+    int? selectedClassId = ViewBag.SelectedClassId as int?;
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg rounded-4">
+        <div class="card-body">
+            <h2 class="mb-4 text-primary fw-bold">@ViewData["Title"]</h2>
+
+            <form method="get" asp-action="AssignedList" class="mb-4">
+                <div class="row align-items-end">
+                    <div class="col-md-6">
+                        <label for="classId" class="form-label fw-semibold">Select Class</label>
+                        <select id="classId" name="classId" class="form-select selectpicker" data-live-search="true" onchange="this.form.submit()">
+                            <option value="">-- Select Class --</option>
+                            @foreach (var cls in classList)
+                            {
+                                <option value="@cls.Id" selected="@(selectedClassId == cls.Id)">
+                                    Class @cls.Id
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mt-3 mt-md-0 d-flex align-items-end">
+                        @if (selectedClassId.HasValue)
+                        {
+                            <a asp-controller="ClassSubject" asp-action="Assign" asp-route-classId="@selectedClassId"
+                               class="btn btn-success btn-lg rounded-pill shadow-sm">
+                                <i class="bi bi-plus-circle me-2"></i> Assign Subjects
+                            </a>
+                        }
+                        else
+                        {
+                            <button class="btn btn-secondary btn-lg rounded-pill shadow-sm" type="button" disabled>
+                                <i class="bi bi-info-circle me-2"></i> Select a class to assign
+                            </button>
+                        }
+                    </div>
+                </div>
+            </form>
+
+            @* @if (TempData["Error"] != null) *@
+            @* { *@
+            @*     <div class="alert alert-warning mt-3">@TempData["Error"]</div> *@
+            @* } *@
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered mt-4">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Class Name</th>
+                                <th>Assigned Subjects</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@item.ClassName</td>
+                                    <td>
+                                        @if (item.Subjects != null && item.Subjects.Any())
+                                        {
+                                            @foreach (var subject in item.Subjects)
+                                            {
+                                               
+                                                    <span class="badge bg-info text-dark me-1 mb-1">@subject</span>
+                                                
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">No subjects assigned</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else if (selectedClassId.HasValue)
+            {
+                <div class="alert alert-info mt-4">No subjects assigned to this class yet.</div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,36 @@
+﻿@model SchoolManagement.Core.Entites.Models.Student
+
+<h2>Promote Student</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+<form asp-action="PromoteStudent" method="post">
+    <input type="hidden" name="studentId" value="@Model.Id" />
+
+    <div class="form-group">
+        <label>Student Name:</label>
+        <input type="text" value="@Model.FirstName" class="form-control" readonly />
+    </div>
+
+    <div class="form-group">
+        <label>Student Current Class</label>
+        <input value="@ViewBag.StudentCurrentClass" class="form-control" disabled />
+    </div>
+
+    <div class="form-group">
+        <label>Select New Class:</label>
+        <select name="newClassId" class="form-control">
+            @foreach (var cls in ViewBag.ClassList)
+            {
+                <option value="@cls.Value">@cls.Text</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Promote</button>
+    <a class="btn btn-outline-secondary" asp-action="StudentList">Back To List</a>
+
+</form>

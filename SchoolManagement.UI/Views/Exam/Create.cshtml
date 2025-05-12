@@ -1,0 +1,50 @@
+﻿@model SchoolManagement.Core.Entites.Models.Exam
+
+<div class="container py-5">
+    <h2 class="mb-4 fw-bold text-primary">
+        <i class="bi bi-pencil-square me-2"></i> Add Exam
+    </h2>
+
+    <form asp-action="Create" method="post" class="p-4 bg-light rounded-4 shadow-sm">
+        <div class="row g-4">
+            <!-- Exam Name -->
+            <div class="col-md-6">
+                <label asp-for="ExamName" class="form-label fw-semibold">
+                    <i class="bi bi-card-text me-1"></i> Exam Name
+                </label>
+                <input asp-for="ExamName" class="form-control form-control-lg rounded-3" placeholder="Enter exam name" required />
+                <span asp-validation-for="ExamName" class="text-danger small"></span>
+            </div>
+
+            <!-- Exam Date -->
+            <div class="col-md-6">
+                <label asp-for="ExamDate" class="form-label fw-semibold">
+                    <i class="bi bi-calendar-event me-1"></i> Exam Date
+                </label>
+                <input asp-for="ExamDate" type="date" class="form-control form-control-lg rounded-3" required />
+                <span asp-validation-for="ExamDate" class="text-danger small"></span>
+            </div>
+
+            <!-- Exam Type -->
+            <div class="col-md-6">
+                <label asp-for="ExamTypeId" class="form-label fw-semibold">
+                    <i class="bi bi-tags me-1"></i> Exam Type
+                </label>
+                <select asp-for="ExamTypeId" asp-items="ViewBag.ExamTypes" class="form-select form-select-lg rounded-3">
+                    <option value="">-- Select Exam Type --</option>
+                </select>
+                <span asp-validation-for="ExamTypeId" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-end mt-4">
+            <a asp-action="Index" class="btn btn-outline-secondary me-2 px-4 rounded-pill">
+                <i class="bi bi-arrow-left-circle me-1"></i> Back
+            </a>
+            <button type="submit" class="btn btn-success px-4 rounded-pill">
+                <i class="bi bi-save me-1"></i> Save
+            </button>
+        </div>
+    </form>
+</div>

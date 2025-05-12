@@ -1,0 +1,46 @@
+﻿<div class="card shadow border-info mb-4">
+    <!-- Toggle Button / Header -->
+
+    <div class="card-header bg-info text-white" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#examSetupContent" aria-expanded="false" aria-controls="examSetupContent">
+        <h5 class="mb-0">📘 Exam Setup Workflow</h5>
+    </div>
+
+    <!-- Collapsible Content -->
+    <div id="examSetupContent" class="collapse">
+        <div class="card-body">
+            <p class="text-muted">
+                Follow the steps below to successfully set up and schedule exams in the system:
+            </p>
+
+            <div class="mb-3">
+                <h6>Step 1: Create an Exam Type</h6>
+                <p>
+                    Before creating an exam, you must first select or create an <strong>Exam Type</strong>
+                    (e.g., Mid Term, Final, Unit Test). If your desired exam type doesn't exist, you can create a new one below.
+                </p>
+                <a asp-action="Index" asp-controller="ExamType" class="btn btn-outline-primary btn-sm me-2">View All Exam Types</a>
+                <a asp-action="Create" asp-controller="ExamType" class="btn btn-primary btn-sm">+ Create Exam Type</a>
+            </div>
+
+            <div class="mb-3">
+                <h6>Step 2: Create the Exam</h6>
+                <p>
+                    Once the exam type is available, proceed to create an actual <strong>Exam</strong> by selecting the exam name,
+                    date, and associating it with the correct exam type.
+                </p>
+                <a asp-action="Index" asp-controller="Exam" class="btn btn-outline-primary btn-sm me-2">View All Exams</a>
+                <a asp-action="Create" asp-controller="Exam" class="btn btn-primary btn-sm">+ Create Exam</a>
+            </div>
+
+            <div>
+                <h6>Step 3: Assign Subjects to the Exam</h6>
+                <p>
+                    Finally, link relevant <strong>Subjects</strong> to the created exam. This ensures each exam includes the
+                    subjects that will be tested.
+                </p>
+                <a asp-action="Index" asp-controller="ExamSubject" class="btn btn-outline-primary btn-sm me-2">View All Exam Subjects</a>
+                <a asp-action="Create" asp-controller="ExamSubject" class="btn btn-primary btn-sm">+ Add Exam Subjects</a>
+            </div>
+        </div>
+    </div>
+</div>

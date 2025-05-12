@@ -1,0 +1,39 @@
+﻿@model SchoolManagement.Core.Entites.Models.ExamSchedule
+
+@{
+    ViewData["Title"] = "Exam Schedule Details";
+}
+
+<h2>Exam Schedule Details</h2>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Schedule ID: @Model.ScheduleId</h5>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Exam</dt>
+            <dd class="col-sm-9">@Model.Exam?.ExamName</dd>
+
+            <dt class="col-sm-3">Class</dt>
+            <dd class="col-sm-9">@Model.Class?.ClassName</dd>
+
+            <dt class="col-sm-3">Subject</dt>
+            <dd class="col-sm-9">@Model.Subject?.SubjectName</dd>
+
+            <dt class="col-sm-3">Exam Date</dt>
+            <dd class="col-sm-9">@Model.ExamDate.ToString("dd MMM yyyy")</dd>
+
+            <dt class="col-sm-3">Start Time</dt>
+            <dd class="col-sm-9">@Model.StartTime</dd>
+
+            <dt class="col-sm-3">End Time</dt>
+            <dd class="col-sm-9">@Model.EndTime</dd>
+
+            <dt class="col-sm-3">Room Number</dt>
+            <dd class="col-sm-9">@Model.RoomNumber</dd>
+        </dl>
+        <a asp-action="Edit" asp-route-id="@Model.ScheduleId" class="btn btn-warning">Edit</a>
+        <a asp-action="Index" class="btn btn-secondary ml-2">Back to List</a>
+    </div>
+</div>

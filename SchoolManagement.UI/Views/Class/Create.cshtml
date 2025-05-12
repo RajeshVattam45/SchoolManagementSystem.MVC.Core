@@ -1,0 +1,40 @@
+﻿@model SchoolManagement.Core.Entites.Models.Class
+
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Add New Class</h3>
+                </div>
+                <div class="card-body">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    <form asp-action="Create" asp-controller="Class" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="form-group">
+                            <label asp-for="ClassId" class="font-weight-bold">Class ID</label>
+                            <input asp-for="ClassId" class="form-control" placeholder="Enter Class ID" required />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ClassName" class="font-weight-bold">Class Name</label>
+                            <input asp-for="ClassName" class="form-control" placeholder="Enter Class Name" required />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="TotalFee" class="font-weight-bold">Total Fee</label>
+                            <input asp-for="TotalFee" class="form-control" placeholder="Enter Total Fee" type="number" required />
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-success">Save</button>
+                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

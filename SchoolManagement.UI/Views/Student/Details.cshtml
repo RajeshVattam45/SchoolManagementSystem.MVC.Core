@@ -1,0 +1,221 @@
+﻿@model SchoolManagement.Core.ViewModels.StudentGuardianViewModel
+
+@{
+    ViewData["Title"] = "Student Details";
+}
+
+<!-- Optional: Inline CSS for custom hover effects -->
+<style>
+    .hover-shadow {
+        transition: box-shadow 0.3s, background-color 0.3s;
+    }
+
+        .hover-shadow:hover {
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+            background-color: #f8f9fa;
+        }
+
+    /* .card-header-custom { */
+    /*     background-color: #0d6efd; */
+    /*     color: #fff; */
+    /* } */
+</style>
+
+<h2 class="mb-4">Student Details</h2>
+<a asp-action="DownloadStudentPdf" asp-route-id="@Model.Student.Id" class="btn btn-primary">
+    Download PDF
+</a>
+<a class="btn btn-secondary" asp-action="StudentList">Back To List</a>
+
+
+<div class="card shadow-lg p-4">
+    <div class="row">
+        <!-- Profile Image -->
+        <div class="col-md-3 text-center mb-3">
+            <img src="@(Model.Student.ProfileImage != null && Model.Student.ProfileImage.Length > 0
+                ? "data:image/png;base64," + Convert.ToBase64String(Model.Student.ProfileImage)
+                : "/images/default-profile.png")"
+                 class="rounded-circle border border-primary"
+                 alt="Student Image"
+                 style="width: 150px; height: 150px; object-fit: cover;">
+        </div>
+
+        <!-- Basic Info -->
+        <div class="col-md-9">
+            <h4 class="mb-3">@Model.Student.FirstName @Model.Student.LastName</h4>
+            <div class="row">
+                <div class="col-md-6 mb-2"><strong>Student ID:</strong> @Model.Student.StudentId</div>
+                <div class="col-md-6 mb-2"><strong>Email:</strong> @Model.Student.Email</div>
+                <div class="col-md-6 mb-2"><strong>Phone:</strong> @Model.Student.PhoneNumber</div>
+                <div class="col-md-6 mb-2"><strong>Role:</strong> @Model.Student.Role</div>
+                <div class="col-md-6 mb-2"><strong>Gender:</strong> @Model.Student.Gender</div>
+                <div class="col-md-6 mb-2"><strong>DOB:</strong> @Model.Student.DateOfBirth.ToShortDateString()</div>
+                <div class="col-md-6 mb-2"><strong>Age:</strong> @Model.Student.Age</div>
+                <div class="col-md-6 mb-2"><strong>Class:</strong> @Model.Student.ClassId</div>
+                <div class="col-md-6 mb-2"><strong>Academic Year:</strong> @Model.Student.AcademicYear</div>
+            </div>
+        </div>
+    </div>
+
+    <hr />
+
+    <!-- Accordion for Address, Family & Previous School Info -->
+    <div class="accordion" id="studentDetailsAccordion">
+        <!-- Address & Family Info Section -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingAddress">
+                <button class="accordion-button card-header-custom" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAddress" aria-expanded="true" aria-controls="collapseAddress">
+                    Address & Family Info
+                </button>
+            </h2>
+            <div id="collapseAddress" class="accordion-collapse collapse show" aria-labelledby="headingAddress" data-bs-parent="#studentDetailsAccordion">
+                <div class="accordion-body">
+                    <div class="row g-3">
+                        <!-- Left Column: Addresses -->
+                        <div class="col-md-6">
+                            <div class="card hover-shadow border-0">
+                                <div class="card-body">
+                                    <h6 class="card-title text-secondary mb-1">Permanent Address:</h6>
+                                    <p class="card-text mb-3">@Model.Student.PermanentAddress</p>
+
+                                    <h6 class="card-title text-secondary mb-1">Current Address:</h6>
+                                    <p class="card-text mb-3">@Model.Student.CurrentAddress</p>
+
+                                    <h6 class="card-title text-secondary mb-1">Pincode:</h6>
+                                    <p class="card-text">@Model.Student.Pincode</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Right Column: Religion, Caste, Blood Group & Family -->
+                        <div class="col-md-6">
+                            <div class="card hover-shadow border-0 mb-3">
+                                <div class="card-body">
+                                    <h6 class="card-title text-secondary mb-1">Religion:</h6>
+                                    <p class="card-text mb-3">@Model.Student.Religion</p>
+
+                                    <h6 class="card-title text-secondary mb-1">Caste:</h6>
+                                    <p class="card-text mb-3">@Model.Student.Caste</p>
+
+                                    <h6 class="card-title text-secondary mb-1">Blood Group:</h6>
+                                    <p class="card-text">@Model.Student.BloodGroup</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- End Row -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Previous School Information Section -->
+        <div class="accordion-item mt-3">
+            <h2 class="accordion-header" id="headingSchool">
+                <button class="accordion-button collapsed card-header-custom" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSchool" aria-expanded="false" aria-controls="collapseSchool">
+                    Previous School Information
+                </button>
+            </h2>
+            <div id="collapseSchool" class="accordion-collapse collapse" aria-labelledby="headingSchool" data-bs-parent="#studentDetailsAccordion">
+                <div class="accordion-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="card hover-shadow border-0">
+                                <div class="card-body">
+                                    <h6 class="card-title text-secondary mb-1">Previous School:</h6>
+                                    <p class="card-text">@Model.Student.PreviousSchool</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card hover-shadow border-0">
+                                <div class="card-body">
+                                    <h6 class="card-title text-secondary mb-1">Percentage:</h6>
+                                    <p class="card-text">@Model.Student.PreviousSchoolPercentage% </p>
+
+                                    <h6 class="card-title text-secondary mb-1 mt-3">Date of Joining:</h6>
+                                    <p class="card-text">@Model.Student.DateOfJoining.ToShortDateString()</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- End Row -->
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item mt-3">
+            <h2 class="accordion-header" id="guardianDetails">
+                <button class="accordion-button collapsed card-header-custom" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#collapseGuardian"
+                        aria-expanded="false" aria-controls="collapseGuardian">
+                    Guardian Information
+                </button>
+            </h2>
+            <div id="collapseGuardian" class="accordion-collapse collapse"
+                 aria-labelledby="guardianDetails" data-bs-parent="#studentDetailsAccordion">
+                <div class="accordion-body">
+                    @if (Model.Guardians != null && Model.Guardians.Any())
+                    {
+                        <div class="row">
+                            @foreach (var guardian in Model.Guardians)
+                            {
+                                <div class="col-md-6">
+                                    <div class="card hover-shadow border-0 mb-3">
+                                        <div class="card-body">
+                                            <h6 class="card-title text-secondary mb-1">@guardian.Relationship</h6>
+                                            <p class="card-text mb-2"><strong>Name:</strong> @guardian.GuardianName</p>
+                                            <p class="card-text mb-2"><strong>Phone Number:</strong> @guardian.PhoneNumber</p>
+                                            <p class="card-text mb-2"><strong>Occupation:</strong> @guardian.Occupation</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No guardians found for this student.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs mt-4" id="studentTabs">
+        <!-- Inside the nav tabs -->
+        <li class="nav-item">
+            <a class="nav-link" href="#" id="class-tab" data-id="@Model.Student.Id">Class</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" id="subjects-tab" data-id="@Model.Student.Id">Subjects</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" id="marks-tab" data-id="@Model.Student.Id">Marks</a>
+        </li>
+    </ul>
+
+    <!-- Content Placeholder for Class History -->
+    <div id="student-content" class="mt-3 p-2 m-3 border rounded bg-light">
+        <!-- Class history content will be loaded here -->
+    </div>
+</div>
+
+<!-- JS File -->
+<script>
+    const studentId = @Model.Student.Id;
+    const classTab = document.getElementById("class-tab");
+
+    classTab?.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        fetch('@Url.Action("LoadStudentClassHistory", "Class")' + `?studentId=${studentId}`)
+            .then(res => {
+                if (!res.ok) throw new Error("Network response was not ok");
+                return res.text();
+            })
+            .then(html => {
+                document.getElementById("student-content").innerHTML = html;
+            })
+            .catch(err => {
+                console.error("Error fetching class history:", err);
+            });
+    });
+</script>

@@ -1,0 +1,276 @@
+﻿@model SchoolManagement.Core.ViewModels.StudentGuardianViewModel
+
+@{
+    ViewData["Title"] = "Edit Student";
+}
+
+<div class="container">
+    <h2>Edit Student</h2>
+    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="Student.Id" />
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="control-label">Student Id</label>
+                    <input asp-for="Student.StudentId" class="form-control" />
+                    <span asp-validation-for="Student.StudentId" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="control-label">First Name</label>
+                    <input asp-for="Student.FirstName" class="form-control" />
+                    <span asp-validation-for="Student.FirstName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="control-label">Last Name</label>
+                    <input asp-for="Student.LastName" class="form-control" />
+                    <span asp-validation-for="Student.LastName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+
+                <div class="form-group">
+                    <label class="control-label">Phone Number</label>
+                    <input asp-for="Student.PhoneNumber" class="form-control" />
+                    <span asp-validation-for="Student.PhoneNumber" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="control-label">Role</label>
+                    <input asp-for="Student.Role" class="form-control" />
+                    <span asp-validation-for="Student.Role" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="control-label">Permanent Address</label>
+                    <input asp-for="Student.PermanentAddress" class="form-control" />
+                    <span asp-validation-for="Student.PermanentAddress" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="control-label">Current Address</label>
+                    <input asp-for="Student.CurrentAddress" class="form-control" />
+                    <span asp-validation-for="Student.CurrentAddress" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="control-label">Pincode</label>
+                    <input asp-for="Student.Pincode" class="form-control" />
+                    <span asp-validation-for="Student.Pincode" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="control-label">Age</label>
+                    <input id="age" asp-for="Student.Age" class="form-control" />
+                    <span asp-validation-for="Student.Age" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="control-label">Date-Of-Birth</label>
+                    <input id="dob" asp-for="Student.DateOfBirth" class="form-control" type="date" />
+                    <span asp-validation-for="Student.DateOfBirth" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div id="previousSchoolDetails" style="display: none;">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label">Previous School Name</label>
+                        <input asp-for="Student.PreviousSchoolClass" class="form-control" />
+                        <span asp-validation-for="Student.PreviousSchoolClass" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label">Previous School Class</label>
+                        <input asp-for="Student.PreviousSchool" class="form-control" />
+                        <span asp-validation-for="Student.PreviousSchool" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label">Previous School Percentage</label>
+                        <input asp-for="Student.PreviousSchoolPercentage" class="form-control" />
+                        <span asp-validation-for="Student.PreviousSchoolPercentage" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="control-label">Email</label>
+                    <input asp-for="Student.Email" class="form-control" />
+                    <span asp-validation-for="Student.Email" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="control-label">Class</label>
+                    <input asp-for="Student.ClassId" id="classSelector" class="form-control" />
+                    <span asp-validation-for="Student.ClassId" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="Student.Gender">Gender</label>
+                    <input asp-for="Student.Gender" class="form-control" />
+                    <span asp-validation-for="Student.Gender" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="Student.DateOfJoining">Date Of Join</label>
+                    <input asp-for="Student.DateOfJoining" class="form-control" />
+                    <span asp-validation-for="Student.DateOfJoining" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="Student.AcademicYear">Academic Year</label>
+                    <input asp-for="Student.AcademicYear" class="form-control" />
+                    <span asp-validation-for="Student.AcademicYear" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="control-label">Religion</label>
+                    <input asp-for="Student.Religion" class="form-control" />
+                    <span asp-validation-for="Student.Religion" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="control-label">Cast</label>
+                    <input asp-for="Student.Caste" class="form-control" />
+                    <span asp-validation-for="Student.Caste" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="control-label">Blood Grout</label>
+                    <input asp-for="Student.BloodGroup" class="form-control" />
+                    <span asp-validation-for="Student.BloodGroup" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="form-label">Current Profile Image</label>
+                    @if (Model.Student.ProfileImage != null && Model.Student.ProfileImage.Length > 0)
+                    {
+                        <img src="data:image/png;base64,@Convert.ToBase64String(Model.Student.ProfileImage)" alt="Profile Image" class="img-thumbnail" width="150" height="150" />
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Update Profile Image</label>
+                    <input type="file" name="ProfileImageFile" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-3"></div>
+            <div class="col-md-3"></div>
+        </div>
+        @if (Model.Guardians != null && Model.Guardians.Any())
+        {
+            for (int i = 0; i < Model.Guardians.Count; i++)
+            {
+                <div class="guardian-section mb-4" id="guardian-@i">
+                    <h5>Guardian @(i + 1)</h5>
+
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input class="form-control" type="text" asp-for="@Model.Guardians[i].GuardianName"  />
+                        @* <input type="hidden" name="Guardians[@i].GuardianName" value="@Model.Guardians[i].GuardianName" /> *@
+                    </div>
+
+                    <div class="form-group">
+                        <label>Relationship</label>
+                        <input class="form-control" type="text" asp-for="@Model.Guardians[i].Relationship"  />
+                        @* <input type="hidden" name="Guardians[@i].Relationship" value="@Model.Guardians[i].Relationship" /> *@
+                    </div>
+
+                    <div class="form-group">
+                        <label>Occupation</label>
+                        <input class="form-control" type="text" asp-for="@Model.Guardians[i].Occupation"  />
+                        @* <input type="hidden" name="Guardians[@i].Occupation" value="@Model.Guardians[i].Occupation" /> *@
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input class="form-control" type="number" asp-for="@Model.Guardians[i].PhoneNumber"  />
+                        @* <input type="hidden" name="Guardians[@i].PhoneNumber" value="@Model.Guardians[i].PhoneNumber" /> *@
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-muted">No guardian information available.</p>
+        }
+
+
+        <button type="submit" class="btn btn-warning">Update</button>
+        <a asp-action="StudentList" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<input type="hidden" id="successMessage" value="@Html.Raw(TempData["SuccessMessage"])">
+<input type="hidden" id="errorMessage" value="@Html.Raw(TempData["ErrorMessage"])">
+
+@section Scripts {
+    @* <script src="~/js/add-guardian.js" asp-append-version="true"></script> *@
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        function togglePreviousSchoolSection() {
+            const classInput = document.getElementById("classSelector");
+            const section = document.getElementById("previousSchoolDetails");
+            const classValue = parseInt(classInput.value);
+
+            if (!isNaN(classValue) && classValue > 1) {
+                section.style.display = "block";
+            } else {
+                section.style.display = "none";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const classInput = document.getElementById("classSelector");
+
+            // Initialize visibility on load
+            togglePreviousSchoolSection();
+
+            // Listen for changes
+            classInput.addEventListener("input", togglePreviousSchoolSection);
+        });
+    </script>
+}

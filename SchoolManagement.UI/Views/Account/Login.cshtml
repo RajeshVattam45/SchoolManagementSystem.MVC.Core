@@ -1,0 +1,62 @@
+﻿@model SchoolManagement.Core.Entites.Models.LoginViewModel
+
+@if (!ViewData.ModelState.IsValid && ViewData.ModelState[""] != null)
+{
+    <div class="alert alert-danger text-center fw-semibold">
+        @ViewData.ModelState[""].Errors.FirstOrDefault()?.ErrorMessage
+    </div>
+}
+
+<!-- Page Wrapper -->
+<div class="min-vh-100 d-flex justify-content-center align-items-center" style="background: linear-gradient(135deg, #c3cfe2, #e2ebf0);">
+    <!-- Glass Card -->
+    <div class="card p-4 shadow-lg rounded-4 bg-white bg-opacity-75 backdrop-blur-lg w-100 animate__animated animate__fadeIn" style="max-width: 420px;">
+
+        <!-- Title -->
+        <h2 class="text-center fw-bold text-primary mb-4 border-bottom pb-2">🔐 Welcome Back!</h2>
+
+        <form asp-action="Login" method="post" onsubmit="showSpinner(this)">
+            <!-- Email Field -->
+            <div class="form-floating mb-3 position-relative">
+                <input asp-for="Email" class="form-control rounded-3 ps-5" placeholder="Email" autocomplete="off" />
+                <label for="Email"><i class="fas fa-envelope me-2 text-primary"></i>Email address</label>
+                <span asp-validation-for="Email" class="text-danger small position-absolute top-100 start-0 mt-1"></span>
+            </div>
+
+            <!-- Password Field -->
+            <div class="form-floating mb-3 position-relative">
+                <input asp-for="Password" type="password" class="form-control rounded-3 ps-5" placeholder="Password" autocomplete="new-password" />
+                <label for="Password"><i class="fas fa-lock me-2 text-primary"></i>Password</label>
+                <span asp-validation-for="Password" class="text-danger small position-absolute top-100 start-0 mt-1"></span>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid mb-3">
+                <button type="submit" id="loginBtn" class="btn btn-primary btn-lg fw-bold rounded-pill shadow-sm position-relative">
+                    <span class="spinner-border spinner-border-sm me-2 d-none" role="status" id="loginSpinner"></span>
+                    <i class="fas fa-sign-in-alt me-2"></i> Login
+                </button>
+            </div>
+        </form>
+
+        <!-- Register Link -->
+        <div class="text-center mt-2">
+            <small class="text-muted">Don't have an account? <a href="/Register" class="fw-bold text-decoration-none text-primary">Reach Out</a></small>
+        </div>
+        
+    </div>
+</div>
+
+<!-- FontAwesome & Animate.css -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+<!-- Optional: Show Spinner on Login -->
+<script>
+    function showSpinner(form) {
+        const btn = document.getElementById('loginBtn');
+        const spinner = document.getElementById('loginSpinner');
+        spinner.classList.remove('d-none');
+        btn.setAttribute('disabled', 'true');
+    }
+</script>

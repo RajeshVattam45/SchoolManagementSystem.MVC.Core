@@ -1,0 +1,92 @@
+﻿@model IEnumerable<SchoolManagement.Core.ViewModels.StudentGuardianViewModel>
+
+@{
+    ViewData["Title"] = "Student List";
+    var selectedClassId = Context.Request.Query["classId"];
+    var searchTerm = ViewBag.SearchTerm as string ?? "";
+}
+
+<h2 class="text-center mt-3 fw-bold">Student List</h2>
+
+
+<div class="container p-2">
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var student in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-lg animate__animated animate__fadeInUp student-card">
+                        <div class="card-img-container">
+                            <!-- Student Image -->
+                            <img src="@(student.Student.ProfileImage != null
+             ? $"data:image/png;base64,{Convert.ToBase64String(student.Student.ProfileImage)}"
+             : "/images/no-image.png")"
+                                 class="card-img" alt="Student Image" />
+
+
+                            <!-- Always-visible name overlay at the bottom -->
+                            <div class="name-overlay">
+                                <h5 class="card-title mb-0">@student.Student.FirstName @student.Student.LastName</h5>
+                            </div>
+
+                            <!-- Details overlay (hidden by default, appears on hover) -->
+                            <div class="details-overlay">
+                                <table class="table table-borderless text-start">
+                                    <tr>
+                                        <td class="fw-bold">Email:</td>
+                                        <td>@student.Student.Email</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Phone:</td>
+                                        <td>@student.Student.PhoneNumber</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Location:</td>
+                                        <td>@student.Student.PermanentAddress</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Type:</td>
+                                        <td>@student.Student.Role</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Class:</td>
+                                        <td>@student.Student.ClassId</td>
+                                    </tr>
+                                </table>
+                                <div class="button-group mt-2">
+                                    <a href="@Url.Action("Details", "Student", new { id = student.Student.Id })"
+                                       class="btn btn-primary rounded-pill custom-btn">
+                                        View Details <span class="ms-1">→</span>
+                                    </a>
+                                    <a href="@Url.Action("Delete", "Student", new { id = student.Student.Id })"
+                                       class="btn btn-danger rounded-pill custom-btn">
+                                        Delete Student <span class="ms-1">→</span>
+                                    </a>
+                                    <a href="@Url.Action("Edit", "Student", new { id = student.Student.Id })"
+                                       class="btn btn-warning rounded-pill custom-btn">
+                                        Edit Student <span class="ms-1">→</span>
+                                    </a>
+                                    <a href="@Url.Action("PromoteStudent", "Student", new { id = student.Student.Id })"
+                                       class="btn btn-info rounded-pill custom-btn">
+                                        Promote Student <span class="ms-1">→</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center">
+                <h4 class="text-danger">No students exist in this class.</h4>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Include Animate.css for Animations -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<link rel="stylesheet" href="~/css/cards.css" asp-append-version="true" />

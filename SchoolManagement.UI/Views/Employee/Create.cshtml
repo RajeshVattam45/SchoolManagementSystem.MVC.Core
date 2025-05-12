@@ -1,0 +1,156 @@
+﻿@model SchoolManagement.Core.Entites.Models.Employee
+
+@{
+    ViewData["Title"] = "Register Employee";
+}
+<link rel="stylesheet" href="~/css/EmployeeForm.css" />
+<div class="container-fluid">
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+        <div class="transparent-card" style="max-width: 800px; width: 100%;">
+            <h1 class="text-center mb-4">Register Employee</h1>
+            <form asp-action="Create" asp-controller="Employee" method="post">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="EmployeeId" class="control-label"></label>
+                            <input asp-for="EmployeeId" class="form-control" required />
+                            <span asp-validation-for="EmployeeId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="FirstName" class="control-label"></label>
+                            <input asp-for="FirstName" class="form-control" required />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="LastName" class="control-label"></label>
+                            <input asp-for="LastName" class="form-control" required />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="PhoneNumber" class="control-label"></label>
+                            <input asp-for="PhoneNumber" class="form-control" required />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Role" class="control-label"></label>
+                            <select asp-for="Role" class="form-control" required>
+                                <option value="">Select Role</option>
+                                <option value="Teacher">Faculty</option>
+                            </select>
+                            <span asp-validation-for="Role" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="PermanentAddress" class="control-label"></label>
+                            <input asp-for="PermanentAddress" class="form-control" required />
+                            <span asp-validation-for="PermanentAddress" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="CurrentAddress" class="control-label"></label>
+                            <input asp-for="CurrentAddress" class="form-control" required />
+                            <span asp-validation-for="CurrentAddress" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Pincode" class="control-label"></label>
+                            <input asp-for="Pincode" class="form-control" required />
+                            <span asp-validation-for="Pincode" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        @* <div class="form-group"> *@
+                        @*     <label asp-for="EmployeeType" class="control-label"></label> *@
+                        @*     <input asp-for="EmployeeType" class="form-control" required /> *@
+                        @*     <span asp-validation-for="EmployeeType" class="text-danger"></span> *@
+                        @* </div> *@
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="EmployeeSalary" class="control-label"></label>
+                            <input asp-for="EmployeeSalary" class="form-control" required />
+                            <span asp-validation-for="EmployeeSalary" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    @* <div class="form-group col-md-6"> *@
+                    @*     <label class="control-label">Acadimic Year</label> *@
+                    @*     <input asp-for="AcademicYear" class="form-control" required /> *@
+                    @*     <span asp-validation-for="AcademicYear" class="text-danger"></span> *@
+                    @* </div> *@
+                    <div class="form-group col-md-6">
+                        <label class="control-label">Date Of Join</label>
+                        <input asp-for="DateOfJoining" class="form-control" type="date" required />
+                        <span asp-validation-for="DateOfJoining" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Email" class="control-label"></label>
+                            <input asp-for="Email" class="form-control" required placeholder="Enter your mail" autocomplete="off" value="" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="PasswordHash" class="control-label"></label>
+                            <input asp-for="PasswordHash" class="form-control" type="password" required placeholder="Enter password" autocomplete="new-password" value="" />
+                            <span asp-validation-for="PasswordHash" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label class="control-label">Gender</label>
+                        @* <input asp-for="Gender" class="form-control" type="text" required /> *@
+                        <select asp-for="Gender" class="form-control" required>
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <span asp-validation-for="Gender" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="text-center mt-3">
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

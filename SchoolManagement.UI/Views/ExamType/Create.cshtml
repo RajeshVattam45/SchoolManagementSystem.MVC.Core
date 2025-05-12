@@ -1,0 +1,46 @@
+﻿@model SchoolManagement.Core.Entites.Models.ExamType
+
+<div class="container py-5">
+    <h2 class="mb-4 fw-bold text-primary">Create Exam Type</h2>
+
+    <form asp-action="Create" class="p-4 shadow rounded-4 bg-light">
+        <div class="row g-4">
+            <!-- Exam ID -->
+            <div class="col-md-4">
+                <label asp-for="ExamTypeId" class="form-label fw-semibold">
+                    <i class="bi bi-hash me-1"></i> Exam ID
+                </label>
+                <input asp-for="ExamTypeId" class="form-control form-control-lg rounded-3" placeholder="E.g., 101" />
+                <span asp-validation-for="ExamTypeId" class="text-danger small"></span>
+            </div>
+
+            <!-- Exam Type Name -->
+            <div class="col-md-4">
+                <label asp-for="ExamTypeName" class="form-label fw-semibold">
+                    <i class="bi bi-journal-text me-1"></i> Exam Type Name
+                </label>
+                <input asp-for="ExamTypeName" class="form-control form-control-lg rounded-3" placeholder="E.g., Midterm, Final" />
+                <span asp-validation-for="ExamTypeName" class="text-danger small"></span>
+            </div>
+
+            <!-- Max Marks -->
+            <div class="col-md-4">
+                <label asp-for="MaxMarks" class="form-label fw-semibold">
+                    <i class="bi bi-123 me-1"></i> Max Marks
+                </label>
+                <input asp-for="MaxMarks" type="number" class="form-control form-control-lg rounded-3" placeholder="E.g., 100" />
+                <span asp-validation-for="MaxMarks" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-end mt-4">
+            <a asp-action="Index" class="btn btn-outline-secondary me-2 px-4 rounded-pill">
+                <i class="bi bi-arrow-left-circle me-1"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-success px-4 rounded-pill">
+                <i class="bi bi-check-circle me-1"></i> Save
+            </button>
+        </div>
+    </form>
+</div>

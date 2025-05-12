@@ -1,0 +1,84 @@
+﻿/* Custom accordion header button styling remains unchanged */
+.custom-accordion-button {
+    background: linear-gradient(135deg, #6dd5fa, #2980b9);
+    color: #fff;
+    font-size: 1.1rem;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+    .custom-accordion-button:hover {
+        background: linear-gradient(135deg, #4ca1af, #2c3e50);
+        transform: scale(1.02);
+    }
+
+    .custom-accordion-button:focus {
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    }
+
+/* Custom accordion body styling with a subtle fade in and rounded corners */
+.custom-accordion-body {
+    background: #ffffff;
+    border-top: 2px solid #2980b9;
+    padding: 20px;
+    animation: fadeIn 0.5s ease-in-out;
+    border-radius: 0 0 10px 10px;
+}
+
+/* FadeIn keyframes animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Overall accordion item hover effect */
+.custom-accordion {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .custom-accordion:hover {
+        transform: scale(1.01);
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    }
+
+/* Enhance list group items inside accordion body for a more interactive display */
+.custom-accordion-body ul li {
+    padding: 10px;
+    border-bottom: 1px solid #e3e3e3;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+    .custom-accordion-body ul li:last-child {
+        border-bottom: none;
+    }
+
+    .custom-accordion-body ul li:hover {
+        background-color: #e0f7fa;
+        transform: translateX(5px);
+    }
+
+    /* Styling for the labels in list items with icons */
+    .custom-accordion-body ul li strong {
+        margin-right: 5px;
+        color: #2980b9;
+        font-size: 0.95rem;
+    }
+
+    /* Optional: style any icons that appear inside list items */
+    .custom-accordion-body ul li i {
+        margin-right: 5px;
+        color: #ff6b6b;
+        transition: transform 0.3s ease;
+    }
+
+    .custom-accordion-body ul li:hover i {
+        transform: rotate(15deg);
+    }

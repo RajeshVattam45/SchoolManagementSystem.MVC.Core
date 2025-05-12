@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SchoolManagementSystem</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker.min.css" rel="stylesheet" />
+</head>
+<body style="width:100%">
+    <header>
+        <nav class="navbar navbar-expand-sm fixed-top navbar-toggleable-sm box-shadow p-3" style="background-color: darkslategray;">
+            <partial name="_NabBarPartial" />
+        </nav>
+    </header>
+    <div class="container-fluid">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+    @if (ViewData["IsHomePage"] != null && (bool)ViewData["IsHomePage"])
+    {
+        <partial name="_HomePagePartial" />
+
+        <!-- Contact Section -->
+        <div class="container my-5 " id="contactBlock">
+            <partial name="_ContactFormPartial" />
+        </div>
+    }
+
+    <footer class="text-dark pt-5 pb-4" style="background-color:darkslategray">
+        <partial name="_FooterPartial" />
+    </footer>
+
+    <!-- Load jQuery first -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <!-- Then Bootstrap's JavaScript -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Then Bootstrap Datepicker -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
+
+    <!-- Then your custom script(s) -->
+    <script src="~/js/date-picker.js" asp-append-version="true"></script>
+    @* <script src="~/js/alerts.js" asp-append-version="true"></script> *@
+
+    <!-- Site scripts last -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <!-- Flatpickr CSS (put this in <head> or before your script) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <!-- Flatpickr JS (put this before your date-picker.js script) -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.12/dist/jquery.validate.unobtrusive.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

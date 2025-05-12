@@ -1,0 +1,126 @@
+﻿@model SchoolManagement.Core.Entites.Models.ExamSchedule
+@await Html.PartialAsync("_ExamDependencyInfo")
+
+@{
+    ViewData["Title"] = "Create Exam Schedule";
+}
+
+<div class="container py-4">
+    <h2 class="mb-4 text-primary fw-bold">
+        <i class="bi bi-calendar-plus me-2"></i> @ViewData["Title"]
+    </h2>
+
+    <form asp-action="Create" method="post" class="needs-validation" novalidate>
+        <div class="row g-4">
+            <!-- Exam Dropdown -->
+            <div class="col-md-4">
+                <label asp-for="ExamId" class="form-label">Exam</label>
+                <select asp-for="ExamId" class="form-select" asp-items="ViewBag.ExamList" id="ExamId">
+                    <option value="">-- Select Exam --</option>
+                </select>
+                <span asp-validation-for="ExamId" class="text-danger small"></span>
+            </div>
+
+            <!-- Class Dropdown -->
+            <div class="col-md-4">
+                <label asp-for="ClassId" class="form-label">Class</label>
+                <select asp-for="ClassId" class="form-select" asp-items="ViewBag.ClassList" id="ClassId">
+                    <option value="">-- Select Class --</option>
+                </select>
+                <span asp-validation-for="ClassId" class="text-danger small"></span>
+            </div>
+
+            <!-- Subject Dropdown -->
+            <div class="col-md-4">
+                <label asp-for="SubjectId" class="form-label">Subject</label>
+                <select asp-for="SubjectId" class="form-select" id="SubjectId">
+                    <option value="">-- Select Subject --</option>
+                </select>
+                <div id="subjectLoading" class="form-text text-muted" style="display: none;">
+                    <i class="bi bi-arrow-repeat me-1"></i> Loading subjects...
+                </div>
+                <span asp-validation-for="SubjectId" class="text-danger small"></span>
+            </div>
+
+            <!-- Exam Date -->
+            <div class="col-md-4">
+                <label asp-for="ExamDate" class="form-label">Exam Date</label>
+                <input asp-for="ExamDate" type="date" class="form-control" />
+                <span asp-validation-for="ExamDate" class="text-danger small"></span>
+            </div>
+
+            <!-- Start Time -->
+            <div class="col-md-4">
+                <label asp-for="StartTime" class="form-label">Start Time</label>
+                <input asp-for="StartTime" type="time" class="form-control" />
+                <span asp-validation-for="StartTime" class="text-danger small"></span>
+            </div>
+
+            <!-- End Time -->
+            <div class="col-md-4">
+                <label asp-for="EndTime" class="form-label">End Time</label>
+                <input asp-for="EndTime" type="time" class="form-control" />
+                <span asp-validation-for="EndTime" class="text-danger small"></span>
+            </div>
+
+            <!-- Room Number -->
+            <div class="col-md-6">
+                <label asp-for="RoomNumber" class="form-label">Room Number</label>
+                <input asp-for="RoomNumber" class="form-control" placeholder="e.g., 101A" />
+                <span asp-validation-for="RoomNumber" class="text-danger small"></span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="col-12 mt-2 d-flex justify-content-start">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save me-1"></i> Create Schedule
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary ms-2">
+                    <i class="bi bi-arrow-left-circle me-1"></i> Cancel
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const examSelect = document.querySelector('#ExamId');
+            const subjectSelect = document.querySelector('#SubjectId');
+            const loadingIndicator = document.querySelector('#subjectLoading');
+
+            examSelect.addEventListener('change', function () {
+                const selectedExamId = this.value;
+                subjectSelect.innerHTML = '<option value="">-- Select Subject --</option>';
+
+                if (!selectedExamId) return;
+
+                loadingIndicator.style.display = 'inline';
+
+                fetch(`/ExamScheduleMvc/GetSubjectsByExamId?examId=${selectedExamId}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network error');
+                        return response.json();
+                    })
+                    .then(data => {
+                        data.forEach(subject => {
+                            const option = document.createElement('option');
+                            option.value = subject.id;
+                            option.text = subject.subjectName;
+                            subjectSelect.appendChild(option);
+                        });
+                    })
+                    .catch(err => {
+                        alert("Failed to load subjects. Please try again.");
+                        console.error(err);
+                    })
+                    .finally(() => {
+                        loadingIndicator.style.display = 'none';
+                    });
+            });
+        });
+    </script>
+}

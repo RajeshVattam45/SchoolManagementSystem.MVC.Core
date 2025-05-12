@@ -1,0 +1,52 @@
+﻿<div class="container my-5">
+    <div class="row align-items-center">
+        <!-- Text Content -->
+        <div class="col-lg-6">
+            <h2 class="fw-bold">Efficient & Smart School Management System</h2>
+            <p class="fst-italic text-muted">
+                Our School Management System simplifies academic operations, streamlining
+                student records, teacher schedules, and administrative tasks efficiently.
+            </p>
+            <ul class="list-unstyled">
+                <li class="d-flex align-items-center">
+                    <span class="text-success me-2 fs-4">✔</span> Manage student admissions, attendance, and progress reports effortlessly.
+                </li>
+                <li class="d-flex align-items-center">
+                    <span class="text-success me-2 fs-4">✔</span> Timetable scheduling and teacher workload management made easy.
+                </li>
+                <li class="d-flex align-items-center">
+                    <span class="text-success me-2 fs-4">✔</span> Integrated fee payment and accounting system for smooth financial transactions.
+                </li>
+            </ul>
+            <a href="#contactBlock" class="btn btn-success rounded-pill px-4 mt-3">Learn More →</a>
+        </div>
+
+        <!-- Image -->
+        <div class="col-lg-6 text-center">
+            <img src="~/images/about.jpg" alt="School Management" class="img-fluid rounded">
+        </div>
+    </div>
+</div>
+
+
+<!-- About Us Section (Moved Outside the Hero Section) -->
+<section class="bg-success text-white text-center py-5 mt-2">
+    <div class="container">
+        <h2 class="fw-bold">About Us</h2>
+        <p class="mx-auto w-75">
+            Our School Management System is designed to simplify administrative tasks,
+            improve communication, and enhance the learning experience. With an efficient
+            platform, we streamline student records, attendance tracking, grade management,
+            and communication between teachers, students, and parents. Join us in building
+            a smarter, more organized educational environment.
+        </p>
+    </div>
+</section>
+<!-- Dispaaying School Summary Details -->
+@{
+    var summaryModel = ViewBag.SchoolSummaryModel as SchoolManagement.Core.ViewModels.SchoolSummaryViewModel;
+}
+@if (summaryModel != null)
+{
+    @await Html.PartialAsync("_SchoolSummaryPartial", summaryModel)
+}

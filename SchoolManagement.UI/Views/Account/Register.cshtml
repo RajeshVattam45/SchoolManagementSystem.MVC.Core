@@ -1,0 +1,260 @@
+﻿@model SchoolManagement.Core.Entites.Models.Student
+
+@{
+    ViewData["Title"] = "Register Student";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<!-- Include additional styling -->
+<style>
+    /* Glassmorphism card */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.25);
+        border-radius: 16px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    }
+
+    /* Custom label styling */
+    .form-label {
+        color: #333;
+        font-weight: 500;
+    }
+
+    /* Input field enhancements */
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+
+    /* Button customization */
+    .btn-custom {
+        background-color: #0d6efd;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+    }
+
+        .btn-custom:hover {
+            background-color: #0b5ed7;
+        }
+</style>
+
+
+<!-- Page container with gradient background -->
+<div class="container-fluid" style="background: linear-gradient(to right, #74ebd5, #ACB6E5); min-height: 100vh; padding: 30px 0;">
+    <div class="container">
+        <div class="card glass-card p-4 mx-auto" style="max-width: 900px;">
+            <h2 class="text-center mb-4 text-primary">Register Student</h2>
+            <form asp-action="CreateStudent" asp-controller="Student" method="post" enctype="multipart/form-data">
+                <!-- Student Personal Details -->
+                <div class="mb-4">
+                    <h4 class="mb-3">Student Personal Details</h4>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Student Id</label>
+                            <input asp-for="StudentId" class="form-control" />
+                            <span asp-validation-for="StudentId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">First Name</label>
+                            <input asp-for="FirstName" class="form-control" required type="text" />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Last Name</label>
+                            <input asp-for="LastName" class="form-control" required type="text" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Gender</label>
+                            <select asp-for="Gender" class="form-select">
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <span asp-validation-for="Gender" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Phone Number</label>
+                            <input asp-for="PhoneNumber" class="form-control" required type="text" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Email</label>
+                            <input asp-for="Email" class="form-control" type="email" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" asp-for="PasswordHash" class="form-control" />
+                            <span asp-validation-for="PasswordHash" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Date-Of-Birth</label>
+                            <input asp-for="DateOfBirth" class="form-control" type="date" required />
+                            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Role</label>
+                            <select asp-for="Role" class="form-select">
+                                <option value="">Select Role</option>
+                                <option value="Student">Student</option>
+                            </select>
+                            <span asp-validation-for="Role" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Age</label>
+                            <input asp-for="Age" class="form-control" type="number" required />
+                            <span asp-validation-for="Age" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Current Address</label>
+                            <input asp-for="CurrentAddress" class="form-control" type="text" required />
+                            <span asp-validation-for="CurrentAddress" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Permanent Address</label>
+                            <input asp-for="PermanentAddress" class="form-control" type="text" required />
+                            <span asp-validation-for="PermanentAddress" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Pincode</label>
+                            <input asp-for="Pincode" class="form-control" type="number" required />
+                            <span asp-validation-for="Pincode" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                @* <!-- Parent Details --> *@
+                @* <div class="mb-4"> *@
+                @*     <h4 class="mb-3">Parent Details</h4> *@
+                @*     <div class="row g-3"> *@
+                @*         <div class="col-md-3"> *@
+                @*             <label class="form-label">Father Name</label> *@
+                @*             <input asp-for="FatherName" class="form-control" required type="text" /> *@
+                @*             <span asp-validation-for="FatherName" class="text-danger"></span> *@
+                @*         </div> *@
+                @*         <div class="col-md-3"> *@
+                @*             <label class="form-label">Father's Phone Number</label> *@
+                @*             <input asp-for="FatherPhoneNumber" class="form-control" required type="text" /> *@
+                @*             <span asp-validation-for="FatherPhoneNumber" class="text-danger"></span> *@
+                @*         </div> *@
+                @*         <div class="col-md-3"> *@
+                @*             <label class="form-label">Father's Occupation</label> *@
+                @*             <input asp-for="FatherOccupation" class="form-control" /> *@
+                @*             <span asp-validation-for="FatherOccupation" class="text-danger"></span> *@
+                @*         </div> *@
+                @*         <div class="col-md-3"> *@
+                @*             <label class="form-label">Mother Name</label> *@
+                @*             <input asp-for="MotherName" class="form-control" /> *@
+                @*             <span asp-validation-for="MotherName" class="text-danger"></span> *@
+                @*         </div> *@
+                @*     </div> *@
+                @* </div> *@
+
+                @* <div class="mb-4"> *@
+                @*     <div class="row g-3"> *@
+                @*         <div class="col-md-3"> *@
+                @*             <label class="form-label">Mother's Occupation</label> *@
+                @*             <input asp-for="MotherOccupation" class="form-control" /> *@
+                @*             <span asp-validation-for="MotherOccupation" class="text-danger"></span> *@
+                @*         </div> *@
+                @*     </div> *@
+                @* </div> *@
+
+                <!-- Educational Details -->
+                <div class="mb-4">
+                    <h4 class="mb-3">Educational Details</h4>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Previous School</label>
+                            <input asp-for="PreviousSchool" class="form-control" />
+                            <span asp-validation-for="PreviousSchool" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Previous School Percentage</label>
+                            <input asp-for="PreviousSchoolPercentage" class="form-control" type="number" step="0.01" />
+                            <span asp-validation-for="PreviousSchoolPercentage" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Enter Current Class</label>
+                            <select asp-for="ClassId" asp-items="ViewBag.ClassLIst" class="form-select">
+                                <option value="">-- Select Exam Type --</option>
+                            </select>
+                            <span asp-validation-for="ClassId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Academic Year</label>
+                            <input asp-for="AcademicYear" class="form-control" />
+                            <span asp-validation-for="AcademicYear" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Information -->
+                <div class="mb-4">
+                    <h4 class="mb-3">Additional Information</h4>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Religion</label>
+                            <input asp-for="Religion" class="form-control" />
+                            <span asp-validation-for="Religion" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Caste</label>
+                            <input asp-for="Caste" class="form-control" />
+                            <span asp-validation-for="Caste" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Blood Group</label>
+                            <input asp-for="BloodGroup" class="form-control" />
+                            <span asp-validation-for="BloodGroup" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" for="ProfileImage">Upload Profile Image</label>
+                            <input type="file" name="ProfileImageFile" class="form-control" />
+                            <span asp-validation-for="ProfileImage" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-custom btn-lg">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

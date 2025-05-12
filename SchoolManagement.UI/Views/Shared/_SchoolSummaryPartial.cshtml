@@ -1,0 +1,45 @@
+﻿@model SchoolManagement.Core.ViewModels.SchoolSummaryViewModel
+
+<div class="container-fluid bg-light mt-1">
+    <div class="row justify-content-center bg-body-secondary py-5 rounded-3 px-3">
+        <div class="col-12 col-sm-6 col-lg-3 mb-4">
+            <div class="bg-white shadow-sm p-4 rounded-3 h-100 d-flex align-items-center gap-3">
+                <div class="fs-1">🎓</div>
+                <div>
+                    <h3 class="fw-bold mb-1">@Model.StudentCount</h3>
+                    <p class="text-muted mb-0">Students</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3 mb-4">
+            <div class="bg-white shadow-sm p-4 rounded-3 h-100 d-flex align-items-center gap-3">
+                <div class="fs-1">🧑‍🏫</div>
+                <div>
+                    <h3 class="fw-bold mb-1">@Model.EmployeeCount</h3>
+                    <p class="text-muted mb-0">Employees</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3 mb-4">
+            <div class="bg-white shadow-sm p-4 rounded-3 h-100 d-flex align-items-center gap-3">
+                <div class="fs-1">🏫</div>
+                <div>
+                    <h3 class="fw-bold mb-1">@Model.BranchCount</h3>
+                    <p class="text-muted mb-0">Branches</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3 mb-4">
+            <div class="bg-white shadow-sm p-4 rounded-3 h-100 d-flex align-items-center gap-3">
+                <div class="fs-1">🛌</div>
+                <div>
+                    <h3 class="fw-bold mb-1">5</h3>
+                    <p class="text-muted mb-0">Available hostels</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

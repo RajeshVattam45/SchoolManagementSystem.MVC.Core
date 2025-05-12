@@ -1,0 +1,126 @@
+﻿@model IEnumerable<SchoolManagement.Core.Entites.Models.Student>
+
+@{
+    ViewData["Title"] = "Student List";
+    var selectedClassId = Context.Request.Query["classId"];
+    var searchTerm = ViewBag.SearchTerm as string ?? "";
+}
+
+<h2 class="text-center mt-3 fw-bold">Student List</h2>
+
+<!-- Filter Section -->
+<div class="container">
+    <div class="row justify-content-between align-items-center">
+        <div class="col-md-9">
+            <form method="get" class="row align-items-end mb-4">
+                <div class="col-md-4">
+                    <label for="classFilter" class="form-label fw-bold">Filter by Class:</label>
+                    <select id="classFilter" name="classId" class="form-select" onchange="this.form.submit();">
+                        <option value="">All Classes</option>
+                        @foreach (var classItem in ViewBag.ClassList as SelectList)
+                        {
+                            <option value="@classItem.Value" selected="@(classItem.Value == selectedClassId ? "selected" : null)">
+                                @classItem.Text
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label for="search" class="form-label fw-bold">Search by Name or ID:</label>
+                    <input type="text" id="search" name="search" class="form-control"
+                           placeholder="e.g. John or STU123" value="@searchTerm" />
+                </div>
+                <div class="col-md-3 d-grid">
+                    <button type="submit" class="btn btn-primary mt-2">Search</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-3 text-end">
+            <a href="@Url.Action("Register", "Student")" class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow-sm">
+                <i class="bi bi-plus-circle me-2"></i> Add New Student
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container p-2">
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var student in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-lg animate__animated animate__fadeInUp student-card">
+                        <div class="card-img-container">
+                            <!-- Student Image -->
+                            <img src="@(student.ProfileImage != null
+             ? $"data:image/png;base64,{Convert.ToBase64String(student.ProfileImage)}"
+             : "/images/no-image.png")"
+                                 class="card-img" alt="Student Image" />
+
+
+                            <!-- Always-visible name overlay at the bottom -->
+                            <div class="name-overlay">
+                                <h5 class="card-title mb-0">@student.FirstName @student.LastName</h5>
+                            </div>
+
+                            <!-- Details overlay (hidden by default, appears on hover) -->
+                            <div class="details-overlay">
+                                <table class="table table-borderless text-start">
+                                    <tr>
+                                        <td class="fw-bold">Email:</td>
+                                        <td>@student.Email</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Phone:</td>
+                                        <td>@student.PhoneNumber</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Location:</td>
+                                        <td>@student.PermanentAddress</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Type:</td>
+                                        <td>@student.Role</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Class:</td>
+                                        <td>@student.ClassId</td>
+                                    </tr>
+                                </table>
+                                <div class="button-group mt-2">
+                                    <a href="@Url.Action("Details", "Student", new { id = student.Id })"
+                                       class="btn btn-primary rounded-pill custom-btn">
+                                        View Details <span class="ms-1">→</span>
+                                    </a>
+                                    <a href="@Url.Action("Delete", "Student", new { id = student.Id })"
+                                       class="btn btn-danger rounded-pill custom-btn">
+                                        Delete Student <span class="ms-1">→</span>
+                                    </a>
+                                    <a href="@Url.Action("Edit", "Student", new { id = student.Id })"
+                                       class="btn btn-warning rounded-pill custom-btn">
+                                        Edit Student <span class="ms-1">→</span>
+                                    </a>
+                                    <a href="@Url.Action("PromoteStudent", "Student", new { id = student.Id })"
+                                       class="btn btn-info rounded-pill custom-btn">
+                                        Promote Student <span class="ms-1">→</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center">
+                <h4 class="text-danger">No students exist in this class.</h4>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Include Animate.css for Animations -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<link rel="stylesheet" href="~/css/cards.css" asp-append-version="true" />

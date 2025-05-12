@@ -1,0 +1,279 @@
+﻿@model SchoolManagement.Core.ViewModels.StudentGuardianViewModel
+
+@{
+    ViewData["Title"] = "Register Student";
+}
+
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+<!-- Page container with gradient background -->
+<div class="container-fluid">
+    <div class="p-3">
+        <form asp-action="Register" asp-controller="Student" method="post" enctype="multipart/form-data">
+            <!-- Student Personal Details -->
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-primary">Register Student</h2>
+                <a class="btn btn-outline-secondary" asp-action="StudentList">Back To List</a>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label" for="Student_StudentId">Student ID <span class="text-danger">*</span></label>
+                    @* <input type="number" class="form-control" id="Student_StudentId" name="Student.StudentId" /> *@
+                    <input type="number" asp-for="Student.StudentId" class="form-control" id="Student_StudentId" placeholder="Enter Student ID" />
+                    @* <span  asp-validation-for="Student.StudentId" id="studentIdError" class="text-danger"></span> *@
+                    <span asp-validation-for="Student.StudentId" id="studentIdError" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">First Name <span class="text-danger">*</span></label>
+                    <input asp-for="Student.FirstName" class="form-control" required type="text" />
+                    <span asp-validation-for="Student.FirstName" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                    <input asp-for="Student.LastName" class="form-control" required type="text" />
+                    <span asp-validation-for="Student.LastName" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Gender <span class="text-danger">*</span></label>
+                    <select asp-for="Student.Gender" class="form-select">
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <span asp-validation-for="Student.Gender" class="text-danger"></span>
+                </div>
+            </div>
+
+
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                    <input asp-for="Student.PhoneNumber" class="form-control" required type="text" />
+                    <span asp-validation-for="Student.PhoneNumber" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Email <span class="text-danger">*</span></label>
+                    <input asp-for="Student.Email" class="form-control" type="email" autocomplete="off" />
+                    <span asp-validation-for="Student.Email" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Password <span class="text-danger">*</span></label>
+                    <input type="password" asp-for="Student.PasswordHash" class="form-control" autocomplete="new-password" value="" />
+                    <span asp-validation-for="Student.PasswordHash" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Date-Of-Birth <span class="text-danger">*</span></label>
+                    @* <input class="form-control dob-datepicker" type="text" autocomplete="off" required /> *@
+                    <input id="dob" asp-for="Student.DateOfBirth" class="form-control" type="text" autocomplete="off" placeholder="yyyy-mm-dd" required />
+                    <span asp-validation-for="Student.DateOfBirth" class="text-danger"></span>
+                </div>
+
+            </div>
+
+
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Age <span class="text-danger">*</span></label>
+                    <input id="age" asp-for="Student.Age" class="form-control" type="number" readonly />
+                    <span asp-validation-for="Student.Age" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Current Address <span class="text-danger">*</span></label>
+                    <input asp-for="Student.CurrentAddress" class="form-control" type="text" required />
+                    <span asp-validation-for="Student.CurrentAddress" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Permanent Address </label>
+                    <input asp-for="Student.PermanentAddress" class="form-control" type="text" required />
+                    <span asp-validation-for="Student.PermanentAddress" class="text-danger"></span>
+                </div>
+            </div>
+
+
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Pincode <span class="text-danger">*</span></label>
+                    <input asp-for="Student.Pincode" class="form-control" type="number" required />
+                    <span asp-validation-for="Student.Pincode" class="text-danger"></span>
+                </div>
+            </div>
+
+            <!-- Guardian Details -->
+            <h4>Guardian Details</h4>
+
+            <div id="guardian-container">
+                @if (Model.Guardians != null && Model.Guardians.Count > 0)
+                {
+                    @foreach (var guardian in Model.Guardians.Select((value, index) => new { value, index }))
+                    {
+                        <div class="guardian-section border rounded p-3 mb-3" id="guardian-@guardian.index">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="mb-0">Guardian @(@guardian.index + 1)</h5>
+                                <button type="button" class="btn btn-danger btn-sm remove-guardian" data-guardian-id="@guardian.index">Remove</button>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label>Guardian Name</label>
+                                    <input asp-for="Guardians[@guardian.index].GuardianName" class="form-control" />
+                                    <span asp-validation-for="Guardians[@guardian.index].GuardianName" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Relationship</label>
+                                    <input asp-for="Guardians[@guardian.index].Relationship" class="form-control" />
+                                    <span asp-validation-for="Guardians[@guardian.index].Relationship" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Occupation</label>
+                                    <input asp-for="Guardians[@guardian.index].Occupation" class="form-control" />
+                                    <span asp-validation-for="Guardians[@guardian.index].Occupation" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Phone Number</label>
+                                    <input asp-for="Guardians[@guardian.index].PhoneNumber" class="form-control" />
+                                    <span asp-validation-for="Guardians[@guardian.index].PhoneNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="guardian-section border rounded p-3 mb-3" id="guardian-0">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0">Guardian 1</h5>
+                            <button type="button" class="btn btn-danger btn-sm remove-guardian" data-guardian-id="0">Remove</button>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label>Guardian Name</label>
+                                <input asp-for="Guardians[0].GuardianName" class="form-control" />
+                                <span asp-validation-for="Guardians[0].GuardianName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Relationship</label>
+                                <input asp-for="Guardians[0].Relationship" class="form-control" />
+                                <span asp-validation-for="Guardians[0].Relationship" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Occupation</label>
+                                <input asp-for="Guardians[0].Occupation" class="form-control" />
+                                <span asp-validation-for="Guardians[0].Occupation" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Phone Number</label>
+                                <input asp-for="Guardians[0].PhoneNumber" class="form-control" />
+                                <span asp-validation-for="Guardians[0].PhoneNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Add Guardian Button -->
+            <div class="mb-3">
+                <button type="button" class="btn btn-primary" id="add-guardian-btn">+ Add Guardian</button>
+            </div>
+
+
+            <!-- Educational Details -->
+
+            <h4 class="mb-3">Educational Details</h4>
+            <div class="row g-3">
+                <h3>Current School Details</h3>
+                <div class="col-md-3">
+
+                    <div class="form-group">
+                        <label class="control-label">Current Class <span class="text-danger">*</span></label>
+                        <input type="text" id="classDisplay" class="form-control" readonly />
+                        <input type="hidden" asp-for="Student.ClassId" id="classSelector" />
+                        <span asp-validation-for="Student.ClassId" class="text-danger"></span>
+                    </div>
+                    <span asp-validation-for="Student.Gender" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Academic Year</label>
+                    <input asp-for="Student.AcademicYear" class="form-control"
+                           value="@($"{DateTime.Now.Year} - {DateTime.Now.AddYears(1).Year}")" />
+                    <span asp-validation-for="Student.AcademicYear" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label">Date Of Join</label>
+                    <input id="doj" asp-for="Student.DateOfJoining" asp-for="Student.DateOfBirth" class="form-control" type="text" autocomplete="off" placeholder="yyyy-mm-dd" required />
+                    <span asp-validation-for="Student.DateOfJoining" class="text-danger"></span>
+                </div>
+
+                <div id="previousSchoolDetails" style="display: none;">
+                    <h3 class="p-2">Previous School Details</h3>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="form-label">Previous School</label>
+                            <input asp-for="Student.PreviousSchool" class="form-control" />
+                            <span asp-validation-for="Student.PreviousSchool" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Previous School Class</label>
+                            <input asp-for="Student.PreviousSchoolClass" class="form-control" />
+                            <span asp-validation-for="Student.PreviousSchoolClass" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Previous School Percentage</label>
+                            <input asp-for="Student.PreviousSchoolPercentage" class="form-control" type="number" step="0.01" />
+                            <span asp-validation-for="Student.PreviousSchoolPercentage" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+               
+            </div>
+
+            <!-- Additional Information -->
+            <h4 class="mb-3">Additional Information</h4>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Religion</label>
+                    <input asp-for="Student.Religion" class="form-control" />
+                    <span asp-validation-for="Student.Religion" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Caste</label>
+                    <input asp-for="Student.Caste" class="form-control" />
+                    <span asp-validation-for="Student.Caste" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Blood Group</label>
+                    <input asp-for="Student.BloodGroup" class="form-control" />
+                    <span asp-validation-for="Student.BloodGroup" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="ProfileImage">Upload Profile Image <span class="text-danger">*</span></label>
+                    @* <input type="file" name="ProfileImageFile" class="form-control" /> *@
+                    @* <span asp-validation-for="Student.ProfileImage" class="text-danger"></span> *@
+                    <input name="ProfileImageFile" type="file" class="form-control" />
+                    <span asp-validation-for="Student.ProfileImage" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="p-1">
+                @* <button type="submit" class="btn btn-secondary" id="submitBtn">Submit</button> *@
+                <button type="submit" class="btn btn-secondary" id="submitBtn" disabled>Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/date-picker.js" asp-append-version="true"></script>
+    <script src="~/js/add-guardian.js" asp-append-version="true"></script>
+    <script src="~/js/calculate-age.js" asp-append-version="true"></script>
+    <script src="~/js/student-id.js" asp-append-version="true"></script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
