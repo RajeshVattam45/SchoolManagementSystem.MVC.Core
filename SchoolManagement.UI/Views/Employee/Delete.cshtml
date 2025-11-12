@@ -1,12 +1,20 @@
 ﻿@model SchoolManagement.Core.Entites.Models.Employee
 
-<h2>Are you sure you want to delete this student?</h2>
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="card shadow-lg p-4" style="max-width: 600px; width: 100%;">
+        <h2 class="text-danger">Confirm Deletion</h2>
+        <p>Are you sure you want to delete the following student?</p>
+        <ul class="list-group mb-3">
+            <li class="list-group-item"><strong>Name:</strong> @Model.FirstName @Model.LastName</li>
+            <li class="list-group-item"><strong>Email:</strong> @Model.Email</li>
+            <li class="list-group-item"><strong>Phone:</strong> @Model.PhoneNumber</li>
+            <li class="list-group-item"><strong>Phone:</strong> @Model.Role</li>
+        </ul>
 
-<p>@Model.FirstName @Model.LastName</p>
-
-<form asp-action="Delete">
-    <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Delete</button>
-</form>
-
-<a asp-action="Index">Cancel</a>
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

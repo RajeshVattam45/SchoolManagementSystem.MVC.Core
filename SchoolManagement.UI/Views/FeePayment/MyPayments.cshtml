@@ -1,0 +1,85 @@
+﻿@model SchoolManagement.Core.ViewModels.FeeViewModel.StudentPaymentDetailsViewModel
+
+<div class="container m-4 p-5">
+    <div class="col-sm-3">
+        @if (ViewBag.NoPayments != null)
+        {
+            <div class="alert alert-info">
+                @ViewBag.NoPayments
+            </div>
+            return;
+        }
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="p-2 m-3">
+                <h2 class="mb-4 bg-secondary text-white fw-bold border rounded border-dark">My Fee Payments</h2>
+            </div>
+        </div>
+        <div class="col-md-4 p-4">
+            <a asp-action="DownloadMyPaymentsPdf" class="btn btn-primary mb-3 border rounded border-danger fw-bold">
+                📥 Download PDF Summary
+            </a>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card p-3 mb-4">
+                <h4 class="">Status Summary</h4>
+                <p><strong>Total Fee:</strong> @Model.Status.TotalFee.ToString("C")</p>
+                <p><strong>Total Paid:</strong> @Model.Status.TotalPaid.ToString("C")</p>
+                <p><strong>Pending Amount:</strong> @Model.Status.PendingAmount.ToString("C")</p>
+                <p><strong>Due Date:</strong> @Model.Status.DueDate.ToShortDateString()</p>
+                @if (Model.Status.IsOverdue)
+                {
+                    <p class="text-danger"><strong>Status:</strong> Overdue! <br />Penalty: @Model.Status.PenaltyAmount.ToString("C")</p>
+                }
+                else
+                {
+                    <p><strong>Status:</strong> @(Model.Status.PendingAmount == 0 ? "Complete" : "In Progress")</p>
+                }
+            </div>
+        </div>
+
+
+
+        <div class="col-md-8">
+            @if (!Model.Payments.Any())
+            {
+                <p>You have no recorded fee payments.</p>
+            }
+            else
+            {
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Fee Type</th>
+                            <th>Amount Paid</th>
+                            <th>Class</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Payments.Count; i++)
+                        {
+                            var payment = Model.Payments[i];
+                            <tr>
+                                <td>@(i + 1)</td>
+                                <td>@payment.PaymentDate.ToShortDateString()</td>
+                                <td>@payment.FeeType</td>
+                                <td>@payment.AmountPaid.ToString("C")</td>
+                                <td>@payment.ClassName</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>

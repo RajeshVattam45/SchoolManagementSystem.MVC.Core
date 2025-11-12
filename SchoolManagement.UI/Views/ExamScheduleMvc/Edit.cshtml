@@ -28,9 +28,10 @@
 
     <div class="form-group">
         <label asp-for="SubjectId"></label>
-        <select asp-for="SubjectId" class="form-control" asp-items="ViewBag.SubjectList">
-            <option value="">-- Select Subject --</option>
-        </select>
+        <input asp-for="SubjectId" id="SubjectId" />
+        @* <select asp-for="SubjectId" class="form-control" id="SubjectId" > *@
+        @*     <option value="">-- Select Subject --</option> *@
+        @* </select> *@
         <span asp-validation-for="SubjectId" class="text-danger"></span>
     </div>
 
@@ -59,11 +60,68 @@
     </div>
 
     <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary ml-2">Cancel</a>
+
 </form>
 
 
 @section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const examSelect = document.querySelector('#ExamId');
+            const subjectSelect = document.querySelector('#SubjectId');
+            const loadingIndicator = document.createElement('span');
+            loadingIndicator.id = 'subjectLoading';
+            loadingIndicator.textContent = 'Loading subjects...';
+            loadingIndicator.style.display = 'none';
+            subjectSelect.parentNode.appendChild(loadingIndicator);
+
+            const loadSubjects = (selectedExamId, selectedSubjectId = null) => {
+                if (!selectedExamId) return;
+
+                loadingIndicator.style.display = 'inline';
+                subjectSelect.innerHTML = '<option value="">-- Select Subject --</option>';
+
+                fetch(`/ExamScheduleMvc/GetSubjectsByExamId?examId=${selectedExamId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(subject => {
+                            const option = document.createElement('option');
+                            option.value = subject.id;
+                            option.text = subject.subjectName;
+
+                            if (selectedSubjectId && subject.id === parseInt(selectedSubjectId)) {
+                                option.selected = true;
+                            }
+
+                            subjectSelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Failed to load subjects:', error);
+                        alert('Error loading subjects');
+                    })
+                    .finally(() => {
+                        loadingIndicator.style.display = 'none';
+                    });
+            };
+
+            // 🔁 Load subjects on Exam selection change
+            examSelect.addEventListener('change', function () {
+                loadSubjects(this.value);
+            });
+
+            // ✅ Auto-load subjects on page load using current values from model
+            const initialExamId = examSelect.value;
+            const initialSubjectId = subjectSelect.getAttribute('data-initial');
+            if (initialExamId) {
+                loadSubjects(initialExamId, initialSubjectId);
+            }
+        });
+    </script>
+
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+

@@ -51,7 +51,6 @@ namespace SchoolManagementSystem.MVC.Controllers
             }
         }
 
-
         // GET: Subject/Create
         // Displays the form to create a new subject.
         public async Task<IActionResult> Create ( )

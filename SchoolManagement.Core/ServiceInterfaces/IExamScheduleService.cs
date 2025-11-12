@@ -11,5 +11,6 @@ namespace SchoolManagement.Core.ServiceInterfaces
         Task CreateExamScheduleAsync ( ExamSchedule schedule );
         Task UpdateExamScheduleAsync ( ExamSchedule schedule );
         Task DeleteExamScheduleAsync ( int id );
+        Task ScheduleMultipleExamsAsync ( ExamScheduleBatchRequest request );
     }
 }

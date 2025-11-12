@@ -7,7 +7,7 @@
 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
 <!-- Page container with gradient background -->
-<div class="container-fluid">
+<div class="container border rounded border-primary mt-5 p-3">
     <div class="p-3">
         <form asp-action="Register" asp-controller="Student" method="post" enctype="multipart/form-data">
             <!-- Student Personal Details -->
@@ -197,12 +197,12 @@
                 <div class="col-md-3">
                     <label class="form-label">Academic Year</label>
                     <input asp-for="Student.AcademicYear" class="form-control"
-                           value="@($"{DateTime.Now.Year} - {DateTime.Now.AddYears(1).Year}")" />
+                           value="@($"{DateTime.Now.Year} - {DateTime.Now.AddYears(1).Year}")" readonly/>
                     <span asp-validation-for="Student.AcademicYear" class="text-danger"></span>
                 </div>
                 <div class="form-group col-md-6">
                     <label class="control-label">Date Of Join</label>
-                    <input id="doj" asp-for="Student.DateOfJoining" asp-for="Student.DateOfBirth" class="form-control" type="text" autocomplete="off" placeholder="yyyy-mm-dd" required />
+                    <input id="doj" asp-for="Student.DateOfJoining" asp-for="Student.DateOfBirth" class="form-control" type="text" autocomplete="off" placeholder="yyyy-mm-dd" required readonly />
                     <span asp-validation-for="Student.DateOfJoining" class="text-danger"></span>
                 </div>
 
@@ -258,13 +258,11 @@
             </div>
 
             <div class="p-1">
-                @* <button type="submit" class="btn btn-secondary" id="submitBtn">Submit</button> *@
                 <button type="submit" class="btn btn-secondary" id="submitBtn" disabled>Submit</button>
             </div>
         </form>
     </div>
 </div>
-
 
 
 @section Scripts {
@@ -276,4 +274,5 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
 }

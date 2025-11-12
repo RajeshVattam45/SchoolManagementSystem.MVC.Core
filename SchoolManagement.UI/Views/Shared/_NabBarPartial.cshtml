@@ -1,6 +1,6 @@
 ﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
-<link rel="stylesheet" href="~/css/navbar.css" />
+@* <link rel="stylesheet" href="~/css/navbar.css" /> *@
 
 @{
     var userEmail = HttpContextAccessor.HttpContext.Session.GetString("UserEmail");
@@ -33,6 +33,11 @@
                             <li>
                                 <a class="dropdown-item fw-bold text-dark" asp-controller="Student" asp-action="StudentList">
                                     View All Students
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item fw-bold text-dark" asp-controller="Student" asp-action="Register">
+                                   Register  Students
                                 </a>
                             </li>
                         </ul>
@@ -126,14 +131,34 @@
                                     Manage Exam Types
                                 </a>
                             </li>
-                            <li>
-                                <a class="dropdown-item fw-bold text-dark" asp-controller="ExamSubject" asp-action="Index">
-                                    Manage Exam Subjects
-                                </a>
-                            </li>
+                            @* <li> *@
+                            @*     <a class="dropdown-item fw-bold text-dark" asp-controller="ExamSubject" asp-action="Index"> *@
+                            @*         Manage Exam Subjects *@
+                            @*     </a> *@
+                            @* </li> *@
                             <li>
                                 <a class="dropdown-item fw-bold text-dark" asp-controller="ExamScheduleMvc" asp-action="Index">
                                     Schedule Exam
+                                </a>
+                               
+                            </li>
+                            
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link fw-bold text-light" href="#" id="feeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Fee
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="feeDropdown">
+                            <li>
+                                <a class="dropdown-item fw-bold text-dark" asp-controller="FeePayment" asp-action="UnpaidStudents">
+                                    Fee's
+                                </a>
+                                
+                            </li>
+                            <li>
+                                <a class="dropdown-item fw-bold text-dark" asp-controller="FeePayment" asp-action="PaidStudents">
+                                    Paid List
                                 </a>
                             </li>
                         </ul>
@@ -179,6 +204,12 @@
                             Events
                         </a>
                     </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold text-light" asp-controller="ContactUs" asp-action="Messages">
+                            Contact Us
+                        </a>
+                    </li>
                 }
                 else if (userRole == "Student")
                 {
@@ -200,11 +231,11 @@
                         </a>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link fw-bold text-light" asp-controller="Marks" asp-action="Index">
-                            Marks
-                        </a>
-                    </li>
+                   @* <li class="nav-item"> *@
+                    @*     <a class="nav-link fw-bold text-light" asp-controller="Marks" asp-action="Index"> *@
+                    @*         Marks *@
+                    @*     </a> *@
+                    @* </li> *@
 
                     <li class="nav-item">
                         <a class="nav-link fw-bold text-light" asp-controller="ExamScheduleMvc" asp-action="Index">
@@ -226,6 +257,16 @@
                     <li class="nav-item">
                         <a class="nav-link fw-bold text-light" asp-controller="Student" asp-action="ChangePassword">
                             Change Password
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold text-light" asp-controller="Marks" asp-action="MyMarks">
+                            My Marks
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold text-light" asp-controller="FeePayment" asp-action="MyPayments">
+                            My Fee's'
                         </a>
                     </li>
                 }
@@ -256,3 +297,17 @@
         </ul>
     </div>
 </div>
+
+<script>
+    document.querySelectorAll('.nav-item.dropdown').forEach(item => {
+        item.addEventListener('mouseenter', () => {
+            const menu = item.querySelector('.dropdown-menu');
+            if (menu) menu.style.display = 'flex';
+        });
+
+        item.addEventListener('mouseleave', () => {
+            const menu = item.querySelector('.dropdown-menu');
+            if (menu) menu.style.display = 'none';
+        });
+    });
+</script>

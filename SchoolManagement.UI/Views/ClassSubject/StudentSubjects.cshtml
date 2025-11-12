@@ -4,27 +4,51 @@
     ViewData["Title"] = "My Class Subjects";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="container py-4 d-flex justify-content-center mt-5">
+    <div class="card shadow border border-2 border-secondary rounded w-100" style="max-width: 720px;">
+        <div class="card-body">
 
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">@TempData["Error"]</div>
-}
-else
-{
-    <h4>Class: @ViewBag.ClassName</h4>
-
-    @if (Model != null && Model.Any())
-    {
-        <ul class="list-group mt-3">
-            @foreach (var subject in Model)
+            @if (TempData["Error"] != null)
             {
-                <li class="list-group-item">@subject</li>
+                <div class="alert alert-danger">@TempData["Error"]</div>
             }
-        </ul>
+            else
+            {
+                <div class="row">
+                    @* Left: Title and Class Info *@
+                    <div class="col-md-5 mb-3">
+                        <h4 class="text-primary">@ViewData["Title"]</h4>
+                        <p class="fw-semibold text-muted">Class: @ViewBag.ClassName</p>
+                    </div>
+
+                    @* Right: Subject List *@
+                    <div class="col-md-7">
+                        @if (Model != null && Model.Any())
+                        {
+                            <ul class="list-group">
+                                @foreach (var subject in Model)
+                                {
+                                    <li class="list-group-item border-0 border-bottom border-light-subtle hover-shadow transition">
+                                        <span class="fw-medium">@subject</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info">📘 No subjects available.</div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-shadow:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+        transition: all 0.3s ease-in-out;
+        transform: translateY(-2px);
     }
-    else
-    {
-        <p class="text-muted">No subjects assigned to your class yet.</p>
-    }
-}
+</style>

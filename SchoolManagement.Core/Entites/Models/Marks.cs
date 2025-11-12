@@ -21,8 +21,8 @@ namespace SchoolManagement.Core.Entites.Models
         public int? SubjectId { get; set; }
         public Subject? Subject { get; set; }
 
-        public int MarksObtained { get; set; }
-        public int MaxMarks { get; set; }
+        public int? MarksObtained { get; set; }
+        public int? MaxMarks { get; set; }
 
         [ForeignKey ( "Class" )]
         public int? ClassId { get; set; }

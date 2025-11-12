@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SchoolManagement.UI.Filter;
+using System.Net;
 
 namespace SchoolManagement.UI.Controllers
 {
@@ -88,7 +89,13 @@ namespace SchoolManagement.UI.Controllers
                 ViewBag.IsStudent = false;
 
                 if (classId.HasValue)
+                {
                     schedules = schedules.Where ( s => s.ClassId == classId.Value );
+
+                    // 🆕 Set selected class name for display in UI
+                    var selectedClass = classList.FirstOrDefault ( c => c.Id == classId.Value );
+                    ViewBag.ClassName = selectedClass?.ClassName ?? $"Class ID: {classId}";
+                }
 
                 if (year.HasValue)
                     schedules = schedules.Where ( s => s.ExamDate.Year == year.Value );
@@ -118,6 +125,12 @@ namespace SchoolManagement.UI.Controllers
             var classes = await _httpClient.GetFromJsonAsync<IEnumerable<Class>> ( "https://localhost:7230/api/Class" );
 
             ViewBag.ExamList = new SelectList ( exams, "ExamId", "ExamName" );
+            //var enrichedExams = exams.Select ( e => new {
+            //    e.ExamId,
+            //    DisplayName = $"{e.ExamType?.ExamTypeName ?? "Unknown"} - {e.ExamName}"
+            //} );
+            //ViewBag.ExamList = new SelectList ( enrichedExams, "ExamId", "DisplayName" );
+
             ViewBag.ClassList = new SelectList ( classes, "Id", "ClassName" );
             ViewBag.SubjectList = new SelectList ( new List<SelectListItem> () );
 
@@ -127,32 +140,105 @@ namespace SchoolManagement.UI.Controllers
 
         // POST: ExamScheduleMvc/Create
         // Submit form to create a new exam schedule.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Create ( ExamSchedule schedule )
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var response = await _httpClient.PostAsJsonAsync ( _apiBaseUrl, schedule, _jsonOptions );
+        //        //if (response.IsSuccessStatusCode)
+        //        //    return RedirectToAction ( nameof ( Index ) );
+        //        if (response.IsSuccessStatusCode)
+        //            return RedirectToAction ( nameof ( Index ), new { classId = schedule.ClassId } );
+
+        //    }
+
+        //    // Repopulate dropdowns for redisplay
+        //    var exams = await _httpClient.GetFromJsonAsync<IEnumerable<Exam>> ( "https://localhost:7230/api/ExamApi" );
+        //    var classes = await _httpClient.GetFromJsonAsync<IEnumerable<Class>> ( "https://localhost:7230/api/Class" );
+
+        //    // ViewBag.ExamList = new SelectList ( exams, "ExamId", "ExamName" );
+        //    var enrichedExams = exams.Select ( e => new
+        //    {
+        //        e.ExamId,
+        //        DisplayName = $"{e.ExamType?.ExamTypeName ?? "Unknown"} - {e.ExamName}"
+        //    } );
+        //    ViewBag.ExamList = new SelectList ( enrichedExams, "ExamId", "DisplayName" );
+
+        //    ViewBag.ClassList = new SelectList ( classes, "Id", "ClassName" );
+        //    ViewBag.SubjectList = new SelectList ( new List<SelectListItem> () );
+
+        //    return View ( schedule );
+        //}
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create ( ExamSchedule schedule )
         {
             if (ModelState.IsValid)
             {
-                var response = await _httpClient.PostAsJsonAsync ( _apiBaseUrl, schedule, _jsonOptions );
-                if (response.IsSuccessStatusCode)
-                    return RedirectToAction ( nameof ( Index ) );
+                try
+                {
+                    var response = await _httpClient.PostAsJsonAsync ( _apiBaseUrl, schedule, _jsonOptions );
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction ( nameof ( Index ), new { classId = schedule.ClassId } );
+                    }
+
+                    // Read full error response
+                    var errorContent = await response.Content.ReadAsStringAsync ();
+
+                    // Extract meaningful part (first line or specific pattern)
+                    var firstLine = errorContent.Split ( '\n', StringSplitOptions.RemoveEmptyEntries ).FirstOrDefault ();
+
+                    // You could use regex if needed, but simple string trimming also works
+                    var meaningfulError = firstLine;
+
+                    // Optional: strip out exception type if present
+                    if (meaningfulError?.Contains ( ":" ) == true)
+                        meaningfulError = meaningfulError.Substring ( meaningfulError.IndexOf ( ':' ) + 1 ).Trim ();
+
+                    ModelState.AddModelError ( string.Empty, meaningfulError ?? "An unexpected error occurred." );
+                }
+                catch (Exception ex)
+                {
+                    // Extract only the message, not stack trace
+                    ModelState.AddModelError ( string.Empty, ex.Message );
+                }
             }
 
-            // Repopulate dropdowns for redisplay
+            // Re-populate dropdowns for redisplay
             var exams = await _httpClient.GetFromJsonAsync<IEnumerable<Exam>> ( "https://localhost:7230/api/ExamApi" );
             var classes = await _httpClient.GetFromJsonAsync<IEnumerable<Class>> ( "https://localhost:7230/api/Class" );
 
-            ViewBag.ExamList = new SelectList ( exams, "ExamId", "ExamName" );
+            var enrichedExams = exams.Select ( e => new
+            {
+                e.ExamId,
+                DisplayName = $"{e.ExamType?.ExamTypeName ?? "Unknown"} - {e.ExamName}"
+            } );
+            ViewBag.ExamList = new SelectList ( enrichedExams, "ExamId", "DisplayName" );
             ViewBag.ClassList = new SelectList ( classes, "Id", "ClassName" );
-            ViewBag.SubjectList = new SelectList ( new List<SelectListItem> () );
 
             return View ( schedule );
+        }
+
+        public class ValidationErrorResponse
+        {
+            public Dictionary<string, string[]> Errors { get; set; } = new ();
         }
 
         // GET: ExamScheduleMvc/Edit/5
         // Load the exam schedule to edit.
         public async Task<IActionResult> Edit ( int id )
         {
+            // Repopulate dropdowns for redisplay
+            var exams = await _httpClient.GetFromJsonAsync<IEnumerable<Exam>> ( "https://localhost:7230/api/ExamApi" );
+            var classes = await _httpClient.GetFromJsonAsync<IEnumerable<Class>> ( "https://localhost:7230/api/Class" );
+
+            ViewBag.ExamList = new SelectList ( exams, "ExamId", "ExamName" );
+            ViewBag.ClassList = new SelectList ( classes, "Id", "ClassName" );
             var response = await _httpClient.GetAsync ( $"{_apiBaseUrl}/{id}" );
             if (response.IsSuccessStatusCode)
             {
@@ -161,38 +247,6 @@ namespace SchoolManagement.UI.Controllers
             }
             return NotFound ();
         }
-
-
-        //public async Task<IActionResult> Edit ( int id )
-        //{
-        //    var response = await _httpClient.GetAsync ( $"{_apiBaseUrl}/{id}" );
-        //    if (!response.IsSuccessStatusCode)
-        //        return NotFound ();
-
-        //    var schedule = await response.Content.ReadFromJsonAsync<ExamSchedule> ( _jsonOptions );
-
-        //    // Minimal: only load current values for display in dropdowns
-        //    var exams = await _httpClient.GetFromJsonAsync<IEnumerable<Exam>> ( "https://localhost:7230/api/ExamApi" );
-        //    var classes = await _httpClient.GetFromJsonAsync<IEnumerable<Class>> ( "https://localhost:7230/api/Class" );
-
-        //    // If needed, load subject list for the selected exam
-        //    IEnumerable<Subject> subjects = new List<Subject> ();
-        //    if (schedule.ExamId.HasValue)
-        //    {
-        //        var subjectResponse = await _httpClient.GetAsync ( $"https://localhost:7230/api/ExamApi/GetSubjectsByExamId/{schedule.ExamId}" );
-        //        if (subjectResponse.IsSuccessStatusCode)
-        //        {
-        //            subjects = await subjectResponse.Content.ReadFromJsonAsync<IEnumerable<Subject>> ();
-        //        }
-        //    }
-
-        //    ViewBag.ExamList = new SelectList ( exams, "ExamId", "ExamName", schedule.ExamId );
-        //    ViewBag.ClassList = new SelectList ( classes, "Id", "ClassName", schedule.ClassId );
-        //    ViewBag.SubjectList = new SelectList ( subjects, "SubjectId", "SubjectName", schedule.SubjectId );
-
-        //    return View ( schedule );
-        //}
-
 
         // POST: ExamScheduleMvc/Edit/5
         // Submit form to update existing exam schedule.
@@ -212,57 +266,24 @@ namespace SchoolManagement.UI.Controllers
             return View ( schedule );
         }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit ( int id, ExamSchedule schedule )
-        //{
-        //    if (id != schedule.ScheduleId)
-        //        return BadRequest ();
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        var response = await _httpClient.PutAsJsonAsync ( $"{_apiBaseUrl}/{id}", schedule, _jsonOptions );
-        //        if (response.IsSuccessStatusCode)
-        //            return RedirectToAction ( nameof ( Index ) );
-        //    }
-
-        //    // Only reload dropdowns to redisplay the form
-        //    var exams = await _httpClient.GetFromJsonAsync<IEnumerable<Exam>> ( "https://localhost:7230/api/ExamApi" );
-        //    var classes = await _httpClient.GetFromJsonAsync<IEnumerable<Class>> ( "https://localhost:7230/api/Class" );
-
-        //    IEnumerable<Subject> subjects = new List<Subject> ();
-        //    if (schedule.ExamId.HasValue)
-        //    {
-        //        var subjectResponse = await _httpClient.GetAsync ( $"https://localhost:7230/api/ExamApi/GetSubjectsByExamId/{schedule.ExamId}" );
-        //        if (subjectResponse.IsSuccessStatusCode)
-        //        {
-        //            subjects = await subjectResponse.Content.ReadFromJsonAsync<IEnumerable<Subject>> ();
-        //        }
-        //    }
-
-        //    ViewBag.ExamList = new SelectList ( exams, "ExamId", "ExamName", schedule.ExamId );
-        //    ViewBag.ClassList = new SelectList ( classes, "Id", "ClassName", schedule.ClassId );
-        //    ViewBag.SubjectList = new SelectList ( subjects, "SubjectId", "SubjectName", schedule.SubjectId );
-
-        //    return View ( schedule );
-        //}
-
-
         // GET: ExamScheduleMvc/Delete/5
         // Show confirmation page for deleting a schedule.
+        // GET or POST: ExamScheduleMvc/Delete/5
+        // GET: ExamScheduleMvc/Delete/5
         public async Task<IActionResult> Delete ( int id )
         {
             var response = await _httpClient.GetAsync ( $"{_apiBaseUrl}/{id}" );
             if (response.IsSuccessStatusCode)
             {
                 var schedule = await response.Content.ReadFromJsonAsync<ExamSchedule> ( _jsonOptions );
-                return View ( schedule );
+                return View ( schedule ); // Show confirmation view
             }
             return NotFound ();
         }
 
         // POST: ExamScheduleMvc/Delete/5
         // Confirm and delete the selected schedule.
+        // POST: ExamScheduleMvc/Delete/5
         [HttpPost, ActionName ( "Delete" )]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed ( int id )

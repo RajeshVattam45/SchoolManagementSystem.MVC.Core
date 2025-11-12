@@ -11,101 +11,151 @@
     var userRole = HttpContextAccessor.HttpContext.Session.GetString("UserRole");
     bool canEdit = userRole == "Admin" || userRole == "Teacher";
 }
-
-<div class="container py-4">
-    <h2 class="text-primary mb-4 fw-bold">
-        <i class="bi bi-calendar-week me-2"></i> Exam Schedules
-    </h2>
-
-    @if (canEdit)
+<div class="container p-4">
+    @if (ViewBag.ClassName != null)
     {
-        @await Html.PartialAsync("_ExamDependencyInfo")
-
-        <form method="get" asp-action="Index" class="row row-cols-lg-auto g-3 align-items-center mb-4">
-            <div class="col">
-                <label for="classId" class="form-label fw-semibold">Class:</label>
-                @Html.DropDownList("classId", (SelectList)ViewBag.ClassList, "All Classes", new { @class = "form-select", onchange = "this.form.submit();" })
-            </div>
-            <div class="col">
-                <label for="year" class="form-label fw-semibold">Academic Year:</label>
-                @Html.DropDownList("year", (SelectList)ViewBag.AcademicYears, "All Years", new { @class = "form-select", onchange = "this.form.submit();" })
-            </div>
-            <div class="col mt-lg-4">
-                <a asp-action="Create" class="btn btn-success shadow-sm">
-                    <i class="bi bi-plus-circle me-1"></i> Create New Schedule
-                </a>
-            </div>
-        </form>
-    }
-    else
-    {
-        <div class="alert alert-info shadow-sm mb-4">
-            <i class="bi bi-info-circle-fill me-2"></i> You are viewing the exam schedule for your class.
-        </div>
+        <h4 class="text-primary">Exam Schedules for @ViewBag.ClassName</h4>
     }
 
-    @if (!Model.Any())
-    {
-        <div class="alert alert-warning shadow-sm">
-            <i class="bi bi-exclamation-circle me-2"></i> No exam schedules found for the selected filters.
-        </div>
-    }
+    <div class="container py-4">
+        <h2 class="text-primary mb-4 fw-bold">
+            <i class="bi bi-calendar-week me-2"></i> Exam Schedules
+        </h2>
 
-    @foreach (var group in groupedByClass)
-    {
-        <div class="card shadow-sm mb-5 border-0">
-            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">
-                    <i class="bi bi-building me-2"></i>Class: @group.Key.ClassName
-                </h5>
+        @if (canEdit)
+        {
+            @await Html.PartialAsync("_ExamDependencyInfo")
+
+            <form method="get" asp-action="Index" class="row row-cols-lg-auto g-3 align-items-center mb-4">
+                <div class="col">
+                    <label for="classId" class="form-label fw-semibold">Class:</label>
+                    @Html.DropDownList("classId", (SelectList)ViewBag.ClassList, "All Classes", new { @class = "form-select", onchange = "this.form.submit();" })
+                </div>
+                <div class="col">
+                    <label for="year" class="form-label fw-semibold">Academic Year:</label>
+                    @Html.DropDownList("year", (SelectList)ViewBag.AcademicYears, "All Years", new { @class = "form-select", onchange = "this.form.submit();" })
+                </div>
+                <div class="col mt-lg-4">
+                    <a asp-action="Create" class="btn btn-success shadow-sm">
+                        <i class="bi bi-plus-circle me-1"></i> Create New Schedule
+                    </a>
+                </div>
+            </form>
+        }
+        else
+        {
+            <div class="alert alert-info shadow-sm mb-4">
+                <i class="bi bi-info-circle-fill me-2"></i> You are viewing the exam schedule for your class.
             </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th><i class="bi bi-calendar-day me-1 text-secondary"></i> Exam Date</th>
-                                <th><i class="bi bi-journal-text me-1 text-secondary"></i> Exam Name</th>
-                                <th><i class="bi bi-clock-history me-1 text-secondary"></i> Start Time</th>
-                                <th><i class="bi bi-clock me-1 text-secondary"></i> End Time</th>
-                                <th><i class="bi bi-door-closed me-1 text-secondary"></i> Room</th>
-                                @if (canEdit)
-                                {
-                                    <th><i class="bi bi-tools me-1 text-secondary"></i> Actions</th>
-                                }
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in group)
+        }
+
+        @if (!Model.Any())
+        {
+            <div class="alert alert-warning shadow-sm">
+                <i class="bi bi-exclamation-circle me-2"></i> No exam schedules found for the selected filters.
+            </div>
+        }
+
+        @foreach (var group in groupedByClass)
+        {
+            var examTypes = group
+            .Where(x => x.Exam?.ExamType != null)
+            .GroupBy(x => x.Exam.ExamType.ExamTypeName)
+            .OrderBy(g => g.Key)
+            .ToList();
+
+            string classKey = $"class_{group.Key.ClassId}";
+            <div class="card shadow-sm mb-5 border-0">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-building me-2"></i>Class: @group.Key.ClassName
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="examTypeDropdown_@classKey" class="form-label fw-semibold">Filter by Exam Type:</label>
+                        <select class="form-select exam-type-dropdown" id="examTypeDropdown_@classKey" data-target="@classKey">
+                            <option value="all">All Exam Types</option>
+                            @foreach (var type in examTypes)
                             {
-                                <tr>
-                                    <td><span class="badge bg-info text-dark">@item.ExamDate.ToString("dd MMM yyyy")</span></td>
-                                    <td class="fw-semibold">@item.Exam.ExamName</td>
-                                    <td>@item.StartTime.ToString(@"hh\:mm")</td>
-                                    <td>@item.EndTime.ToString(@"hh\:mm")</td>
-                                    <td>@item.RoomNumber</td>
-                                    @if (canEdit)
-                                    {
-                                        <td>
-                                            <div class="btn-group" role="group">
-                                                <a asp-action="Details" asp-route-id="@item.ScheduleId" class="btn btn-sm btn-outline-primary" title="Details">
-                                                    <i class="bi bi-eye"></i>
-                                                </a>
-                                                <a asp-action="Edit" asp-route-id="@item.ScheduleId" class="btn btn-sm btn-outline-warning" title="Edit">
-                                                    <i class="bi bi-pencil-square"></i>
-                                                </a>
-                                                <a asp-action="Delete" asp-route-id="@item.ScheduleId" class="btn btn-sm btn-outline-danger" title="Delete">
-                                                    <i class="bi bi-trash"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    }
-                                </tr>
+                                <option value="@type.Key">@type.Key</option>
                             }
-                        </tbody>
-                    </table>
+                        </select>
+                    </div>
+
+                    @foreach (var typeGroup in examTypes)
+                    {
+                        string examTypeKey = typeGroup.Key;
+                        <div class="exam-type-table @classKey" data-examtype="@examTypeKey">
+                            <h6 class="fw-bold text-secondary mb-2"><i class="bi bi-journal-text me-1"></i> @examTypeKey</h6>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-4">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th><i class="bi bi-calendar-day me-1 text-secondary"></i> Exam Date</th>
+                                            <th><i class="bi bi-journal-text me-1 text-secondary"></i> Exam Name</th>
+                                            <th><i class="bi bi-clock-history me-1 text-secondary"></i> Start Time</th>
+                                            <th><i class="bi bi-clock me-1 text-secondary"></i> End Time</th>
+                                            <th><i class="bi bi-door-closed me-1 text-secondary"></i> Room</th>
+                                            @if (canEdit)
+                                            {
+                                                <th><i class="bi bi-tools me-1 text-secondary"></i> Actions</th>
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in typeGroup)
+                                        {
+                                            <tr>
+                                                <td><span class="badge bg-info text-dark">@item.ExamDate.ToString("dd MMM yyyy")</span></td>
+                                                <td class="fw-semibold">@item.Exam.ExamName</td>
+                                                <td>@item.StartTime.ToString(@"hh\:mm")</td>
+                                                <td>@item.EndTime.ToString(@"hh\:mm")</td>
+                                                <td>@item.RoomNumber</td>
+                                                @if (canEdit)
+                                                {
+                                                    <td>
+                                                        <div class="btn-group" role="group">
+                                                            <a asp-action="Edit" asp-route-id="@item.ScheduleId" class="btn btn-sm btn-outline-warning m-1" title="Edit">
+                                                                <i class="bi bi-pencil-square">Edit</i>
+                                                            </a>
+                                                            <a asp-action="Delete" asp-route-id="@item.ScheduleId" class="btn btn-sm btn-outline-danger m-1" title="Delete">
+                                                                <i class="bi bi-trash">Delete</i>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                }
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
-        </div>
-    }
+        }
+    </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('.exam-type-dropdown').forEach(function (dropdown) {
+            dropdown.addEventListener('change', function () {
+                var selected = this.value;
+                var target = this.dataset.target;
+
+                document.querySelectorAll(`.exam-type-table.${target}`).forEach(function (table) {
+                    if (selected === "all" || table.dataset.examtype === selected) {
+                        table.style.display = "block";
+                    } else {
+                        table.style.display = "none";
+                    }
+                });
+            });
+
+            // Trigger initial display
+            dropdown.dispatchEvent(new Event('change'));
+        });
+    });
+</script>

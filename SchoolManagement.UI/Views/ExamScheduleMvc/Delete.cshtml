@@ -12,23 +12,17 @@
 <div>
     <h4>Exam Schedule</h4>
     <dl class="row">
-        <dt class="col-sm-2">
-            Exam Date
-        </dt>
-        <dd class="col-sm-10">
-            @Model.ExamDate.ToShortDateString()
-        </dd>
-        <dt class="col-sm-2">
-            Room Number
-        </dt>
-        <dd class="col-sm-10">
-            @Model.RoomNumber
-        </dd>
+        <dt class="col-sm-2">Exam Date</dt>
+        <dd class="col-sm-10">@Model.ExamDate.ToShortDateString()</dd>
+
+        <dt class="col-sm-2">Room Number</dt>
+        <dd class="col-sm-10">@Model.RoomNumber</dd>
     </dl>
 </div>
 
-<form asp-action="DeleteConfirmed" method="post">
-    <input type="hidden" asp-for="ScheduleId" />
+<form asp-action="Delete" method="post">
+    @* hidden field for id to be sent back *@
+    <input type="hidden" name="id" value="@Model.ScheduleId" />
     <button type="submit" class="btn btn-danger">Delete</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 </form>

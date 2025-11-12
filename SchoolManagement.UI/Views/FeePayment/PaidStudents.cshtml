@@ -1,0 +1,156 @@
+﻿@model List<SchoolManagement.UI.Controllers.StudentFeeSummaryViewModel>
+
+@{
+    ViewBag.Title = "Paid Students";
+    var classes = (List<SchoolManagement.UI.Controllers.ClassViewModel>)ViewBag.Classes;
+    var selectedClassId = ViewBag.SelectedClassId as int?;
+}
+
+<div class="container m-3 p-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Paid Students</h4>
+
+    <div>
+        @if (ViewBag.SelectedStudentId != null)
+        {
+            <a asp-action="PaidStudents" asp-route-classId="@ViewBag.SelectedClassId" class="btn btn-outline-secondary btn-sm me-2">
+                🔙 Back to All Students
+            </a>
+        }
+
+        @if (ViewBag.SelectedClassId != null || ViewBag.SelectedStudentId != null)
+        {
+            <a asp-action="PaidStudents" class="btn btn-outline-danger btn-sm">
+                🧹 Clear Filters
+            </a>
+        }
+    </div>
+</div>
+
+    <div class="row">
+        <div class="col-md-5">
+           <h2 class="mb-3">Paid Students by Class</h2>
+                <form method="get" asp-action="PaidStudents" class="row mb-4">
+                    <div class="col-md-4">
+                        <select name="classId" class="form-select" onchange="this.form.submit()">
+                            <option value="">-- Select Class --</option>
+                            @foreach (var cls in classes)
+                            {
+                            var selected = selectedClassId == cls.ClassId ? "selected" : "";
+                            @:<option value="@cls.ClassId" @selected>@cls.ClassName</option>
+                            }
+                        </select>
+                    </div>
+                </form>
+        </div>
+        <div class="col-md-7">           
+            @if (Model != null && Model.Any())
+            {
+            <table class="table table-hover table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Student</th>
+                        <th>Class</th>
+                        <th>Total Fee</th>
+                        <th>Amount Paid</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                        <th>PDF</th>
+                    </tr>
+                </thead>
+            <tbody>
+            @foreach (var student in Model)
+            {
+                <tr onmouseover="showHistory(@student.StudentId)" onmouseout="hideHistory(@student.StudentId)">
+                    <td>@student.StudentName</td>
+                    <td>@student.ClassId</td>
+                    <td>@student.TotalFee.ToString("C")</td>
+                    <td>@student.TotalPaid.ToString("C")</td>
+                    <td>
+                        @if (student.IsComplete)
+                        {
+                            <span class="text-success">✔ Complete</span>
+                        }
+                        else
+                        {
+                            <span class="text-danger">Pending: @student.PendingAmount.ToString("C")</span>
+                        }
+                    </td>
+                    <td>
+                        @if (!student.IsComplete)
+                        {
+                            <a class="btn btn-warning btn-sm"
+                               asp-controller="FeePayment"
+                               asp-action="UnpaidStudents"
+                               asp-route-classId="@student.ClassId"
+                               asp-route-studentId="@student.StudentId">
+                                Finish Fee
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">Complete</span>
+                        }
+                    </td>
+                <td>
+                    <form asp-action="DownloadMyPaymentsPdf"
+                          asp-controller="FeePayment"
+                          method="get"
+                          class="d-flex"
+                          style="gap: 5px;">
+        
+                        <input type="hidden" name="studentId" value="@student.StudentId" />
+
+                        <select name="classId" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="">📄 Overall</option>
+                            @foreach (var cls in student.Payments.Select(p => new { p.ClassId, p.ClassName }).Distinct())
+                            {
+                                <option value="@cls.ClassId">📄 Current @cls.ClassName</option>
+                            }
+                        </select>
+                    </form>
+                </td>
+
+                </tr>
+
+                <!-- Payment History (hidden by default) -->
+                <tr id="history-@student.StudentId" style="display:none;" class="table-secondary">
+                    <td colspan="6">
+                        <strong>Payment History:</strong>
+                        <ul class="mb-0">
+                            @foreach (var p in student.Payments)
+                            {
+                                <li>
+                                    @p.PaymentDate.ToString("yyyy-MM-dd"): ₹@p.AmountPaid.ToString("N2") (@p.FeeType)
+                                </li>
+                            }
+                        </ul>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else if (selectedClassId != null)
+{
+    <div class="alert alert-warning">No paid students found for the selected class.</div>
+}
+else
+{
+    <div class="text-muted">Please select a class to view paid students.</div>
+}
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function showHistory(id) {
+            document.getElementById("history-" + id).style.display = "table-row";
+        }
+
+        function hideHistory(id) {
+            document.getElementById("history-" + id).style.display = "none";
+        }
+    </script>
+}

@@ -20,6 +20,7 @@ namespace SchoolManagement.Core.RepositoryInterfaces
         Task RegisterStudentWithGuardiansAsync ( Student student, List<Guardian> guardians );
 
         Task<Student> GetStudentByStudentIdAsync ( int studentId );
+        Task<StudentGuardianViewModel> GetStudentWithGuardiansAsync ( int id );
 
     }
 }

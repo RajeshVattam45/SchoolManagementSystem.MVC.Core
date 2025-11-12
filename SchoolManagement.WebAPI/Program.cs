@@ -9,6 +9,7 @@ using SchoolManagementSystem.Data;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using FastEndpoints;
 
 var builder = WebApplication.CreateBuilder ( args );
 
@@ -87,8 +88,15 @@ builder.Services.AddScoped<IStudentClassHistoryService, StudentClassHistoryServi
 builder.Services.AddScoped ( typeof ( IGenericRepository<> ), typeof ( GenericRepository<> ) );
 builder.Services.AddScoped<IEventService, EventService> ();
 
+builder.Services.AddScoped<IFeePaymentRepository, FeePaymentRepository> ();
+builder.Services.AddScoped<IFeePaymentService, FeePaymentService> ();
 
+builder.Services.AddScoped<IContactUsFormServices, ContactUsServices> ();
+builder.Services.AddScoped<IContactUsRepository, ContactUsForm> ();
+
+builder.Services.AddFastEndpoints ();
 builder.Services.AddControllers ();
+builder.Services.AddMemoryCache ();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer ();
@@ -139,7 +147,7 @@ if (app.Environment.IsDevelopment ())
 app.UseHttpsRedirection ();
 app.UseAuthentication ();
 app.UseAuthorization ();
-
+app.UseFastEndpoints ();
 app.MapControllers ();
 
 app.Run ();

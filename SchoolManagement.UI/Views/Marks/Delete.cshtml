@@ -1,0 +1,36 @@
+﻿@model SchoolManagement.Core.Entites.Models.Marks
+
+<div class="container mt-5">
+    <h2>Edit Marks</h2>
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="MarkId" />
+
+        <div class="form-group">
+            <label asp-for="StudentId"></label>
+            <input asp-for="StudentId" class="form-control" readonly />
+        </div>
+        <div class="form-group">
+            <label asp-for="ExamId"></label>
+            <input asp-for="ExamId" class="form-control" readonly />
+        </div>
+        <div class="form-group">
+            <label asp-for="SubjectId"></label>
+            <input asp-for="SubjectId" class="form-control" readonly />
+        </div>
+        <div class="form-group">
+            <label asp-for="ClassId"></label>
+            <input asp-for="ClassId" class="form-control" readonly />
+        </div>
+        <div class="form-group">
+            <label asp-for="MarksObtained"></label>
+            <input asp-for="MarksObtained" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="MaxMarks"></label>
+            <input asp-for="MaxMarks" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">Update</button>
+        <a asp-action="DisplayAllMarks" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

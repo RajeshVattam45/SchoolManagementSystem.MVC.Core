@@ -21,17 +21,25 @@ namespace SchoolManagement.Infrastructure.Repositories
             return marks;
         }
 
+        //public async Task<IEnumerable<Marks>> GetMarksByStudentIdAsync ( int studentId )
+        //{
+        //    return await _context.Marks
+        //        .Where ( m => m.StudentId == studentId )
+        //        .Include ( m => m.Exam ).ThenInclude ( e => e.ExamType )
+        //        .Include ( m => m.Subject )
+        //        .ToListAsync ();
+        //}
         public async Task<IEnumerable<Marks>> GetMarksByStudentIdAsync ( int studentId )
         {
             return await _context.Marks
                 .Where ( m => m.StudentId == studentId )
-                .Include ( m => m.Student )
-                .Include ( m => m.Class )
+                .Include ( m => m.Student ).ThenInclude ( s => s.Class )
                 .Include ( m => m.Exam )
-                .ThenInclude ( e => e.ExamType )
-                .Include ( m => m.Subject )
+                    .ThenInclude ( e => e.ExamType )
+                    .Include ( m => m.Subject )
                 .ToListAsync ();
         }
+
 
         public async Task<IEnumerable<Marks>> GetAllMarksWithDetailsAsync ( )
         {
@@ -51,6 +59,45 @@ namespace SchoolManagement.Infrastructure.Repositories
                 m.ExamId == examId &&
                 m.SubjectId == subjectId &&
                 m.ClassId == classId );
+        }
+
+        public async Task<Marks?> GetMarksByIdAsync ( int id )
+        {
+            return await _context.Marks
+                .Include ( m => m.Student )
+                .Include ( m => m.Subject )
+                .Include ( m => m.Class )
+                .Include ( m => m.Exam )
+                    .ThenInclude ( e => e.ExamType )
+                .FirstOrDefaultAsync ( m => m.MarkId == id );
+        }
+
+        public async Task<Marks?> UpdateMarksAsync ( Marks marks )
+        {
+            var existing = await _context.Marks.FindAsync ( marks.MarkId );
+            if (existing == null)
+                return null;
+
+            existing.MarksObtained = marks.MarksObtained;
+            existing.MaxMarks = marks.MaxMarks;
+            existing.StudentId = marks.StudentId;
+            existing.ExamId = marks.ExamId;
+            existing.SubjectId = marks.SubjectId;
+            existing.ClassId = marks.ClassId;
+
+            await _context.SaveChangesAsync ();
+            return existing;
+        }
+
+        public async Task<bool> DeleteMarksAsync ( int id )
+        {
+            var marks = await _context.Marks.FindAsync ( id );
+            if (marks == null)
+                return false;
+
+            _context.Marks.Remove ( marks );
+            await _context.SaveChangesAsync ();
+            return true;
         }
     }
 }

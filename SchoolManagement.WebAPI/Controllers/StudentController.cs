@@ -4,6 +4,7 @@ using SchoolManagement.Application.Services;
 using SchoolManagement.Core.Entites.Models;
 using SchoolManagement.Core.ServiceInterfaces;
 using SchoolManagement.Core.ViewModels;
+using SchoolManagement.Services;
 using SchoolManagementSystem.Data;
 
 namespace SchoolManagement.WebAPI.Controllers
@@ -14,10 +15,14 @@ namespace SchoolManagement.WebAPI.Controllers
     public class StudentController : ControllerBase
     {
         private readonly IStudentService _studentService;
+        private readonly IMarksService _marksService;
+        private readonly IClassService _classService;
 
-        public StudentController ( IStudentService studentService )
+        public StudentController ( IStudentService studentService, IMarksService marksService, IClassService classService )
         {
             _studentService = studentService;
+            _marksService = marksService;
+            _classService = classService;
         }
 
         [HttpPost ( "register" )]

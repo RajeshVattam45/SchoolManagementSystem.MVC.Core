@@ -1,15 +1,20 @@
 ﻿@model SchoolManagement.Core.Entites.Models.Student
 
-<div class="container d-flex justify-content-center align-items-center vh-100">
+<div class="container d-flex justify-content-center align-items-center vh-100 mt-4">
     <div class="card shadow-lg p-4" style="max-width: 600px; width: 100%;">
-        <h2>Are you sure you want to delete this student?</h2>
-        <p>@Model.FirstName @Model.LastName</p>
-        <form asp-action="Delete" asp-controller="Student">
+        <h2 class="text-danger">Confirm Deletion</h2>
+        <p>Are you sure you want to delete the following student?</p>
+        <ul class="list-group mb-3">
+            <li class="list-group-item"><strong>Name:</strong> @Model.FirstName @Model.LastName</li>
+            <li class="list-group-item"><strong>Class:</strong> @Model.Class?.ClassId ?? "N/A"</li>
+            <li class="list-group-item"><strong>Email:</strong> @Model.Email</li>
+            <li class="list-group-item"><strong>Phone:</strong> @Model.PhoneNumber</li>
+        </ul>
+
+        <form asp-action="Delete" method="post">
             <input type="hidden" asp-for="Id" />
-            <button type="submit" class="btn btn-danger">Delete</button>
-            <a asp-action="DisplayStudent" class="btn btn-primary" asp-controller="Student">Cancle</a>
+            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+            <a asp-action="StudentList" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
 </div>
-
-<a class="btn btn-primary" asp-action="StudentList">Cancel</a>

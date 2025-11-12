@@ -9,10 +9,11 @@ using SchoolManagement.UI.Filter;
 using System.Security.Claims;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using SchoolManagement.Core.ServiceInterfaces;
 
 namespace SchoolManagement.UI.Controllers
 {
-
+    [AuthorizeUser ( "Admin", "Teacher", "Student" )]
     public class StudentController : Controller
     {
         private readonly HttpClient _httpClient;
@@ -138,7 +139,7 @@ namespace SchoolManagement.UI.Controllers
         /// </summary>
         /// <param name="classId"></param>
         /// <returns></returns>
-        [AuthorizeUser ( "Admin" )]
+        [AuthorizeUser ( "Admin", "Teacher" )]
         public async Task<IActionResult> StudentList ( int? classId, string search )
         {
             // Fetch students
@@ -261,7 +262,30 @@ namespace SchoolManagement.UI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [AuthorizeUser ( "Admin" )]
+        /// <summary>
+        /// ADMIN: Show student delete confirmation.
+        /// </summary>
+        [HttpGet]
+        [AuthorizeUser ( "Admin" )]
         public async Task<IActionResult> Delete ( int id )
+        {
+            var response = await _httpClient.GetAsync ( $"{_apiBaseUrl}/{id}" );
+
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["ErrorMessage"] = "Failed to load student for deletion.";
+                return RedirectToAction ( "StudentList" );
+            }
+
+            var content = await response.Content.ReadAsStringAsync ();
+            var student = JsonConvert.DeserializeObject<Student> ( content );
+
+            return View ( student );
+        }
+
+        [HttpPost, ActionName ( "Delete" )]
+        [AuthorizeUser ( "Admin" )]
+        public async Task<IActionResult> DeleteConfirmed ( int id )
         {
             var response = await _httpClient.DeleteAsync ( $"{_apiBaseUrl}/{id}" );
 
@@ -276,6 +300,7 @@ namespace SchoolManagement.UI.Controllers
 
             return RedirectToAction ( "StudentList" );
         }
+
 
         /// <summary>
         /// ADMIN/STUDENT: View student details.
@@ -346,7 +371,7 @@ namespace SchoolManagement.UI.Controllers
         [HttpGet]
         public async Task<IActionResult> PromoteStudent ( int id )
         {
-            // Get the student by ID from the student API
+            // Get student
             var studentResponse = await _httpClient.GetAsync ( $"{_apiBaseUrl}/{id}" );
             if (!studentResponse.IsSuccessStatusCode)
                 return NotFound ();
@@ -354,7 +379,27 @@ namespace SchoolManagement.UI.Controllers
             var studentJson = await studentResponse.Content.ReadAsStringAsync ();
             var student = JsonConvert.DeserializeObject<Student> ( studentJson );
 
-            // Get the list of classes from the class API
+            // Get student's marks
+            var marksResponse = await _httpClient.GetAsync ( $"https://localhost:7230/api/Marks/student/by/{id}" );
+            if (!marksResponse.IsSuccessStatusCode)
+                return BadRequest ( "Failed to load marks" );
+
+            var marksJson = await marksResponse.Content.ReadAsStringAsync ();
+            //var marksList = JsonConvert.DeserializeObject<List<Marks>> ( marksJson );
+            var marksList = JsonConvert.DeserializeObject<List<MarkDto>> ( marksJson );
+
+            // Filter SA2 marks
+            var sa2Marks = marksList
+                .Where ( m => m.ExamTypeName == "Summative Assessments-2 (SA2)" )
+                .ToList ();
+
+            // Check if failed any subject
+            bool hasFailed = sa2Marks.Any ( m =>
+                m.MarksObtained < 0.35 * m.MaxMarks );
+
+            ViewBag.HasFailed = hasFailed;
+
+            // Get class list
             var classResponse = await _httpClient.GetAsync ( _classApi );
             if (!classResponse.IsSuccessStatusCode)
                 return BadRequest ( "Failed to load class list" );
@@ -362,17 +407,14 @@ namespace SchoolManagement.UI.Controllers
             var classJson = await classResponse.Content.ReadAsStringAsync ();
             var classList = JsonConvert.DeserializeObject<List<Class>> ( classJson );
 
-            // Find the index of the current class and get the next class only
             var currentClassIndex = classList.FindIndex ( c => c.Id == student.ClassId );
             if (currentClassIndex >= 0 && currentClassIndex + 1 < classList.Count)
             {
-                // Only get the next class
                 classList = classList.Skip ( currentClassIndex + 1 ).Take ( 1 ).ToList ();
             }
             else
             {
-                // If no next class, handle the case accordingly (e.g., no classes available for promotion)
-                classList.Clear ();  // Or you could display an error or message
+                classList.Clear ();
             }
 
             ViewBag.ClassList = new SelectList ( classList, "Id", "ClassName" );

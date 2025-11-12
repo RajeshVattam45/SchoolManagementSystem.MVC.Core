@@ -1,85 +1,167 @@
 ﻿@model List<SchoolManagement.UI.Controllers.MarksEntryViewModel>
-
 @{
     ViewBag.Title = "Register Marks";
+    var allMarksExist = Model.All(m => m.IsExistingMark);
+    var selectedClassId = ViewBag.SelectedClassId as int? ?? 0;
+    var selectedExamTypeId = ViewBag.SelectedExamTypeId as int? ?? 0;
+    var selectedSubjectId = ViewBag.SelectedSubjectId as int? ?? 0;
 }
 
-<h2>Register Marks</h2>
+<div class="container mt-5">
+    <h2 class="mb-3">Register Marks</h2>
 
-@if (ViewBag.Error != null)
-{
-    <div class="alert alert-danger">@ViewBag.Error</div>
-}
-
-@if (ViewBag.Info != null)
-{
-    <div class="alert alert-info">@ViewBag.Info</div>
-}
-
-<form asp-action="Register" method="get">
-    <div>
-        <label>Class:</label>
-        <select asp-items="ViewBag.Classes" name="classId"></select>
-
-        <label>Exam:</label>
-        <select asp-items="ViewBag.Exams" name="examId"></select>
-
-        <label>Subject:</label>
-        <select asp-items="ViewBag.Subjects" name="subjectId"></select>
-
-        <button type="submit">Load Students</button>
-    </div>
-</form>
-
-@if (Model.Any())
-{
-    <form asp-action="Register" method="post">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Student</th>
-                    <th>Marks Obtained</th>
-                    <th>Max Marks</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (int i = 0; i < Model.Count; i++)
+    <!-- Alert Messages -->
+    @if (TempData["MarkErrors"] is List<string> errors && errors.Any())
+    {
+        <div class="alert alert-danger">
+            <ul>
+                @foreach (var err in errors)
                 {
-                    <tr>
-                        <td>
-                            @Model[i].StudentName
-                            <input type="hidden" asp-for="@Model[i].StudentId" />
-                            <input type="hidden" asp-for="@Model[i].ExamId" />
-                            <input type="hidden" asp-for="@Model[i].SubjectId" />
-                            <input type="hidden" asp-for="@Model[i].ClassId" />
-                        </td>
-                        <td>
-                            @if (Model[i].IsExistingMark)
-                            {
-                                @Model[i].MarksObtained
-                                <input type="hidden" asp-for="@Model[i].MarksObtained" />
-                            }
-                            else
-                            {
-                                <input asp-for="@Model[i].MarksObtained" class="form-control" />
-                            }
-                        </td>
-                        <td>
-                            @if (Model[i].IsExistingMark)
-                            {
-                                @Model[i].MaxMarks
-                                <input type="hidden" asp-for="@Model[i].MaxMarks" />
-                            }
-                            else
-                            {
-                                <input asp-for="@Model[i].MaxMarks" class="form-control" />
-                            }
-                        </td>
-                    </tr>
+                    <li>@err</li>
                 }
-            </tbody>
-        </table>
+            </ul>
+        </div>
+    }
 
-        <button type="submit" class="btn btn-primary">Save / Update Marks</button>
+    @if (ViewBag.Info != null)
+    {
+        <div class="alert alert-info">@ViewBag.Info</div>
+    }
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    <!-- Filters -->
+    <form asp-action="Register" method="get" class="row g-3 mb-4">
+        <div class="col-md-3">
+            <label>Class</label>
+            <select asp-items="ViewBag.Classes" name="classId" class="form-select" value="@selectedClassId"></select>
+        </div>
+        <div class="col-md-3">
+            <label>Exam Type</label>
+            <select asp-items="ViewBag.ExamTypes" name="examTypeId" class="form-select" value="@selectedExamTypeId"></select>
+        </div>
+        <div class="col-md-3">
+            <label>Subject</label>
+            <select asp-items="ViewBag.Subjects" name="subjectId" class="form-select" value="@selectedSubjectId"></select>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Load Students</button>
+        </div>
     </form>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning">No students found for selected filters.</div>
+    }
+    else
+    {
+        <form asp-action="Register" method="post">
+            <input type="hidden" name="classId" value="@selectedClassId" />
+            <input type="hidden" name="examTypeId" value="@selectedExamTypeId" />
+            <input type="hidden" name="subjectId" value="@selectedSubjectId" />
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-dark sticky-top">
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Exam</th>
+                            <th>Subject</th>
+                            @if (!allMarksExist)
+                            {
+                                <th>Max Marks</th>
+                                <th>Marks Obtained</th>
+                            }
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Count; i++)
+                        {
+                            var m = Model[i];
+                            <tr class="@(m.IsExistingMark ? "table-light" : "")">
+                                <td>
+                                    <strong>@m.StudentName</strong>
+                                    <input type="hidden" name="marksList[@i].StudentId" value="@m.StudentId" />
+                                    <input type="hidden" name="marksList[@i].ExamId" value="@m.ExamId" />
+                                    <input type="hidden" name="marksList[@i].SubjectId" value="@m.SubjectId" />
+                                    <input type="hidden" name="marksList[@i].ClassId" value="@m.ClassId" />
+                                </td>
+                                <td>@m.ExamName</td>
+                                <td>@m.SubjectName</td>
+                                @* <td> *@
+                                @*     <input type="number" class="form-control" name="marksList[@i].MaxMarks" value="@m.MaxMarks" readonly /> *@
+                                @* </td> *@
+                                @* <td> *@
+                                @*     @if (m.IsExistingMark) *@
+                                @*     { *@
+                                @*         <input type="number" class="form-control bg-light" name="marksList[@i].MarksObtained" value="@m.MarksObtained" readonly /> *@
+                                @*     } *@
+                                @*     else *@
+                                @*     { *@
+                                @*         <input type="number" class="form-control mark-input" name="marksList[@i].MarksObtained" value="@m.MarksObtained" min="0" max="@m.MaxMarks" /> *@
+                                @*     } *@
+                                @* </td> *@
+                                @if (!allMarksExist)
+                                {
+                                    <td>
+                                        <input type="number" class="form-control" name="marksList[@i].MaxMarks" value="@m.MaxMarks" readonly />
+                                    </td>
+                                    <td>
+                                        @if (m.IsExistingMark)
+                                        {
+                                            <input type="number" class="form-control bg-light" name="marksList[@i].MarksObtained" value="@m.MarksObtained" readonly />
+                                        }
+                                        else
+                                        {
+                                            <input type="number" class="form-control mark-input" name="marksList[@i].MarksObtained" value="@m.MarksObtained" min="0" max="@m.MaxMarks" />
+                                        }
+                                    </td>
+                                }
+                                <td>
+                                    @if (m.IsExistingMark)
+                                    {
+                                        <span class="badge bg-success">Already Registered</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">Awaiting Entry</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (!allMarksExist)
+            {
+                <button type="submit" class="btn btn-success mt-3">Save / Update Marks</button>
+            }
+            else
+            {
+                <a asp-controller="Marks" asp-action="DisplayAllMarks" class="btn btn-warning mt-3">Update Marks</a>
+            }
+        </form>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Basic real-time client-side validation
+        document.querySelectorAll('.mark-input').forEach(input => {
+            input.addEventListener('input', function () {
+                const max = parseInt(this.closest('tr').querySelector('input[name$=".MaxMarks"]').value);
+                if (parseInt(this.value) > max) {
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                }
+            });
+        });
+    </script>
 }

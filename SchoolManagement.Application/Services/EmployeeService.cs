@@ -32,51 +32,8 @@ namespace SchoolManagement.Application.Services
 
         public async Task RegisterEmployeeAsync ( Employee employee )
         {
-            try
-            {
-                string password = employee.PasswordHash;
-
-                if (string.IsNullOrWhiteSpace ( password ))
-                {
-                    throw new ArgumentException ( "Password is required." );
-                }
-
-                if (password.Length < 7)
-                {
-                    throw new ArgumentException ( "Password must be at least 7 characters long." );
-                }
-
-                if (!password.Any ( char.IsUpper ))
-                {
-                    throw new ArgumentException ( "Password must contain at least one uppercase letter." );
-                }
-
-                if (!password.Any ( char.IsLower ))
-                {
-                    throw new ArgumentException ( "Password must contain at least one lowercase letter." );
-                }
-
-                if (!password.Any ( ch => !char.IsLetterOrDigit ( ch ) ))
-                {
-                    throw new ArgumentException ( "Password must contain at least one special character." );
-                }
-
-                if (password.Contains ( " " ))
-                {
-                    throw new ArgumentException ( "Password must not contain spaces." );
-                }
-
-                var passwordHasher = new PasswordHasher<Employee> ();
-                employee.PasswordHash = passwordHasher.HashPassword ( employee, password );
-
                 employee.Id = 0;
-                await _employeeRepository.AddEmployeeAsync ( employee );
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            
+                await _employeeRepository.AddEmployeeAsync ( employee );            
         }
 
         public async Task UpdateEmployeeAsync ( Employee employee )

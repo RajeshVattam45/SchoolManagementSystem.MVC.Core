@@ -23,7 +23,7 @@ namespace SchoolManagement.UI.Controllers
             // ============================================
             // ADMIN: View all attendance records grouped
             // ============================================
-        [AuthorizeUser ( "Admin" )]
+        [AuthorizeUser ( "Admin", "Teacher" )]
         public async Task<IActionResult> Index ( DateTime? startDate, DateTime? endDate )
         {
             var from = startDate ?? DateTime.Today.AddDays ( -7 );
@@ -62,7 +62,7 @@ namespace SchoolManagement.UI.Controllers
         // ============================================
         // ADMIN: Update student attendance
         // ============================================
-        [AuthorizeUser ( "Admin" )]
+        [AuthorizeUser ( "Admin", "Teacher" )]
         [HttpPost]
         public async Task<IActionResult> UpdateAttendance ( [FromBody] StudentAttendanceDto model )
         {

@@ -1,0 +1,218 @@
+﻿@model List<SchoolManagement.Core.ServiceInterfaces.StudentFeeSummaryDto>
+
+@{
+    ViewBag.Title = "Unpaid Students";
+}
+
+<div class="container m-5 p-2">
+    <div class="container">
+        <div class="row">
+            <!-- Class Dropdown -->
+            <div class="col-md-3">
+                <form asp-action="UnpaidStudents" method="get" class="mb-4">
+                    <label for="classId" class="form-label">Select Class:</label>
+                    <div class="input-group">
+                        <select name="classId" id="classId" class="form-select" onchange="this.form.submit()">
+                            <option value="">-- Select Class --</option>
+                            @if (ViewBag.Classes != null)
+                            {
+                                foreach (var cls in (List<SchoolManagement.UI.Controllers.ClassViewModel>)ViewBag.Classes)
+                                {
+                                    if (ViewBag.SelectedClassId != null && (int)ViewBag.SelectedClassId == cls.ClassId)
+                                    {
+                                        <option value="@cls.ClassId" selected="selected">@cls.ClassName</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@cls.ClassId">@cls.ClassName</option>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                <option disabled class="text-danger">⚠ Error loading classes</option>
+                            }
+                        </select>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Student Table -->
+            <div class="col-md-9">
+                <h2>Unpaid Students</h2>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Class</th>
+                            <th>Total Fee</th>
+                            <th>Paid</th>
+                            <th>Pending</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.SelectedClassId == null || string.IsNullOrEmpty(ViewBag.SelectedClassId.ToString()))
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">Please select a class to view unpaid students.</td>
+                            </tr>
+                        }
+                        else if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center text-warning">No unpaid students found for the selected class.</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var summary in Model)
+                            {
+                                var student = summary.CurrentStatus;
+                                <tr>
+                                    <td>@student.StudentName</td>
+                                    <td>@student.ClassName</td>
+                                    <td>@student.TotalFee.ToString("C")</td>
+                                    <td>@student.TotalPaid.ToString("C")</td>
+                                    <td class="text-danger fw-bold">@student.PendingAmount.ToString("C")</td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm mb-1" data-bs-toggle="modal" data-bs-target="#payModal"
+                                                data-studentid="@student.StudentId"
+                                                data-studentname="@student.StudentName"
+                                                data-classid="@student.ClassId"
+                                                data-classname="@student.ClassName"
+                                                data-totalfee="@student.PendingAmount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)">
+                                            Pay
+                                        </button>
+                                        <button class="btn btn-secondary btn-sm mb-1" data-bs-toggle="modal" data-bs-target="#historyModal"
+                                                data-history='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(summary.HistoricalPayments))'
+                                                data-student="@student.StudentName">
+                                            History
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAY MODAL -->
+    <div class="modal fade" id="payModal" tabindex="-1" aria-labelledby="payModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form asp-action="PayFee" method="post" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="payModalLabel">Make Payment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="StudentId" name="StudentId" />
+                    <input type="hidden" id="ClassId" name="ClassId" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Student</label>
+                        <input type="text" id="StudentName" class="form-control" readonly />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Class</label>
+                        <input type="text" id="ClassName" class="form-control" readonly />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Amount to Pay</label>
+                        <input type="number" id="AmountPaid" name="AmountPaid" class="form-control" required min="1" />
+                        <div id="amountError" class="text-danger d-none mt-1">Amount exceeds pending fee.</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Pay</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- HISTORY MODAL -->
+    <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="historyModalLabel">Payment History</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="historyContent" class="list-group">
+                        <div class="text-muted">Loading history...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    @section Scripts {
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // PAY MODAL
+                const payModal = document.getElementById('payModal');
+                // payModal.addEventListener('show.bs.modal', function (event) {
+                payModal.addEventListener('shown.bs.modal', function (event) {
+                    const button = event.relatedTarget;
+                    const pendingAmount = parseFloat(button.getAttribute("data-totalfee"));
+
+                    document.getElementById("StudentId").value = button.getAttribute("data-studentid");
+                    document.getElementById("StudentName").value = button.getAttribute("data-studentname");
+                    document.getElementById("ClassId").value = button.getAttribute("data-classid");
+                    document.getElementById("ClassName").value = button.getAttribute("data-classname");
+                    document.getElementById("AmountPaid").value = pendingAmount;
+                    document.getElementById("AmountPaid").setAttribute("max", pendingAmount);
+                    document.getElementById("amountError").classList.add("d-none");
+                });
+
+                const amountInput = document.getElementById("AmountPaid");
+                if (amountInput) {
+                    amountInput.addEventListener("input", function () {
+                        const max = parseFloat(this.max);
+                        const value = parseFloat(this.value);
+                        const error = document.getElementById("amountError");
+
+                        if (value > max) {
+                            error.classList.remove("d-none");
+                        } else {
+                            error.classList.add("d-none");
+                        }
+                    });
+                }
+
+                // HISTORY MODAL
+                const historyModal = document.getElementById('historyModal');
+                // historyModal.addEventListener('show.bs.modal', function (event) {
+                historyModal.addEventListener('shown.bs.modal', function (event) {
+                    const button = event.relatedTarget;
+                    const historyData = JSON.parse(button.getAttribute("data-history"));
+                    const studentName = button.getAttribute("data-student");
+
+                    document.getElementById('historyModalLabel').innerText = "Payment History for " + studentName;
+                    const container = document.getElementById('historyContent');
+                    container.innerHTML = "";
+
+                    if (!historyData || historyData.length === 0) {
+                        container.innerHTML = "<div class='text-muted'>No payment history available.</div>";
+                        return;
+                    }
+
+                    historyData.forEach(p => {
+                        const item = document.createElement("div");
+                        item.className = "list-group-item";
+                        item.innerHTML = `<strong>Date:</strong> ${new Date(p.PaymentDate).toLocaleDateString()} |
+                                          <strong>Class:</strong> ${p.ClassName} |
+                                          <strong>Amount:</strong> ₹${p.AmountPaid} |
+                                          <strong>Type:</strong> ${p.FeeType}`;
+                        container.appendChild(item);
+                    });
+                });
+            });
+        </script>
+    }
+</div>

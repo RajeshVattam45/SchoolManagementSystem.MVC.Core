@@ -1,0 +1,27 @@
+﻿@model List<SchoolManagement.Core.RepositoryInterfaces.ContactRequestDto>
+
+<div class="container mt-5">
+
+    <h2>Contact Messages</h2>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Message</th>
+                <th>Submitted At</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Email</td>
+                    <td>@item.Message</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

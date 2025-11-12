@@ -4,7 +4,7 @@
     ViewData["Title"] = "Edit Student";
 }
 
-<div class="container">
+<div class="container mt-5">
     <h2>Edit Student</h2>
     <form asp-action="Edit" method="post" enctype="multipart/form-data">
         <input type="hidden" asp-for="Student.Id" />
@@ -130,7 +130,7 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <label class="control-label">Class</label>
-                    <input asp-for="Student.ClassId" id="classSelector" class="form-control" />
+                    <input asp-for="Student.ClassId" id="classSelector" class="form-control" readonly />
                     <span asp-validation-for="Student.ClassId" class="text-danger"></span>
                 </div>
             </div>

@@ -1,13 +1,76 @@
-﻿
-/* Add underline + orange color on hover for parent link */
-.nav-item.dropdown > .nav-link:hover {
-    text-decoration: underline;
-    text-decoration-color: greenyellow;
-    text-underline-offset: 4px;
-    color: greenyellow !important;
+﻿/* Modern Navbar Styling */
+.navbar {
+    background-color: #1f2d3d !important;
+    padding: 1rem 2rem;
+    transition: all 0.3s ease;
 }
 
-/* Optional: smooth transition */
-.nav-link {
-    transition: all 0.3s ease;
+    .navbar .nav-link {
+        color: #ffffff !important;
+        font-weight: 600;
+        padding: 0.75rem 1rem;
+        transition: color 0.3s ease;
+    }
+
+        .navbar .nav-link:hover {
+            background-color: #32465a;
+            border-radius: 6px;
+        }
+
+/* Dropdown Hover Effect */
+.dropdown-menu {
+    margin-top: 0;
+    border-radius: 0 0 8px 8px;
+    background-color: #ffffff;
+    display: none;
+    flex-direction: row;
+    padding: 1rem;
+    gap: 1.5rem;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.nav-item.dropdown:hover .dropdown-menu {
+    display: flex;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 9999;
+}
+
+/* Dropdown Items */
+.dropdown-item {
+    white-space: nowrap;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    color: #333;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+    .dropdown-item:hover {
+        background-color: #f0f0f0;
+    }
+
+/* Make nav responsive */
+@media (max-width: 768px) {
+    .navbar-collapse {
+        flex-direction: column;
+    }
+
+    .dropdown-menu {
+        flex-direction: column;
+        position: static;
+        box-shadow: none;
+        background-color: #f8f9fa;
+        padding: 0;
+    }
+
+    .nav-item.dropdown:hover .dropdown-menu {
+        display: block;
+    }
+
+    .dropdown-item {
+        padding-left: 1.5rem;
+    }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolManagement.Application.Services;
 using SchoolManagement.Core.Entites.Models;
 using SchoolManagement.Core.ServiceInterfaces;
+using SchoolManagement.Core.ViewModels;
 using System.Threading.Tasks;
 
 namespace SchoolManagement.WebAPI.Controllers
@@ -48,6 +49,23 @@ namespace SchoolManagement.WebAPI.Controllers
             return CreatedAtAction ( nameof ( Get ), new { id = schedule.ScheduleId }, schedule );
         }
 
+        //[HttpPost]
+        //public async Task<IActionResult> Post ( [FromBody] ExamSchedule schedule )
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest ( ModelState );
+
+        //    try
+        //    {
+        //        await _service.CreateExamScheduleAsync ( schedule );
+        //        return CreatedAtAction ( nameof ( Get ), new { id = schedule.ScheduleId }, schedule );
+        //    }
+        //    catch (InvalidOperationException ex)
+        //    {
+        //        return Conflict ( new { message = ex.Message } );
+        //    }
+        //}
+
         // PUT: api/ExamSchedulesApi/5
         [HttpPut ( "{id}" )]
         public async Task<IActionResult> Put ( int id, [FromBody] ExamSchedule schedule )
@@ -65,6 +83,16 @@ namespace SchoolManagement.WebAPI.Controllers
         {
             await _service.DeleteExamScheduleAsync ( id );
             return NoContent ();
+        }
+
+        [HttpPost ( "Batch" )]
+        public async Task<IActionResult> PostBatch ( [FromBody] ExamScheduleBatchRequest request )
+        {
+            if (!ModelState.IsValid || request.Schedules == null || !request.Schedules.Any ())
+                return BadRequest ( "Invalid request." );
+
+            await _service.ScheduleMultipleExamsAsync ( request );
+            return Ok ();
         }
     }
 }

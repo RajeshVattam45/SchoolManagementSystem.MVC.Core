@@ -18,7 +18,7 @@ namespace SchoolManagement.Infrastructure.Repositories
         public async Task<IEnumerable<ExamSchedule>> GetAllAsync ( )
         {
             return await _context.ExamSchedules
-                .Include ( es => es.Exam )
+                .Include ( es => es.Exam ).ThenInclude(e => e.ExamType)
                 .Include ( es => es.Class )
                 .Include ( es => es.Subject )
                 .ToListAsync ();
@@ -27,7 +27,7 @@ namespace SchoolManagement.Infrastructure.Repositories
         public async Task<ExamSchedule> GetByIdAsync ( int id )
         {
             return await _context.ExamSchedules
-                .Include ( es => es.Exam )
+                .Include ( es => es.Exam ).ThenInclude ( e => e.ExamType )
                 .Include ( es => es.Class )
                 .Include ( es => es.Subject )
                 .FirstOrDefaultAsync ( e => e.ScheduleId == id );
@@ -52,5 +52,26 @@ namespace SchoolManagement.Infrastructure.Repositories
         {
             await _context.SaveChangesAsync ();
         }
+
+        public async Task AddRangeAsync ( List<ExamSchedule> schedules )
+        {
+            await _context.ExamSchedules.AddRangeAsync ( schedules );
+        }
+
+        public async Task<Exam> GetExamWithTypeAsync ( int examId )
+        {
+            return await _context.Exams
+                .Include ( e => e.ExamType )
+                .FirstOrDefaultAsync ( e => e.ExamId == examId );
+        }
+
+        public async Task<IEnumerable<ExamSchedule>> GetByClassAndDateAsync ( int classId, DateTime examDate )
+        {
+            return await _context.ExamSchedules
+                .Include ( e => e.Exam )
+                .Where ( e => e.ClassId == classId && e.ExamDate == examDate )
+                .ToListAsync ();
+        }
+
     }
 }

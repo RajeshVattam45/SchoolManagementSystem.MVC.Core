@@ -133,5 +133,25 @@ namespace SchoolManagement.Infrastructure.Repositories
             return await _context.Students.FirstOrDefaultAsync ( s => s.StudentId == studentId );
         }
 
+        // PDF implementation
+        public async Task<StudentGuardianViewModel> GetStudentWithGuardiansAsync ( int id )
+        {
+            var student = await _context.Students
+                .Include ( s => s.Class )
+                .FirstOrDefaultAsync ( s => s.Id == id );
+
+            var guardians = await _context.Guardians
+                .Where ( g => g.StudentId == id )
+                .ToListAsync ();
+
+            if (student == null)
+                throw new ArgumentException ( "Student not found" );
+
+            return new StudentGuardianViewModel
+            {
+                Student = student,
+                Guardians = guardians
+            };
+        }
     }
 }

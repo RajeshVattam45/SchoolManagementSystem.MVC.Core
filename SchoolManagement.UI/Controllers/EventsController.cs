@@ -5,7 +5,7 @@ using SchoolManagement.UI.Filter;
 
 namespace SchoolManagement.UI.Controllers
 {
-    [AuthorizeUser]
+    [AuthorizeUser ( "Admin", "Teacher", "Student" )]
     public class EventsController : Controller
     {
         private readonly HttpClient _httpClient;
@@ -63,6 +63,19 @@ namespace SchoolManagement.UI.Controllers
         }
 
         // POST: /Events/Create
+        //[HttpPost]
+        //public async Task<IActionResult> Create ( Events ev )
+        //{
+        //    if (!ModelState.IsValid)
+        //        return View ( ev );
+
+        //    var response = await _httpClient.PostAsJsonAsync ( _eventsApi, ev );
+
+        //    if (response.IsSuccessStatusCode)
+        //        return RedirectToAction ( nameof ( Index ) );
+
+        //    return View ( ev );
+        //}
         [HttpPost]
         public async Task<IActionResult> Create ( Events ev )
         {
@@ -73,6 +86,30 @@ namespace SchoolManagement.UI.Controllers
 
             if (response.IsSuccessStatusCode)
                 return RedirectToAction ( nameof ( Index ) );
+
+            if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync ();
+
+                // Parse the validation errors
+                var problemDetails = JsonConvert.DeserializeObject<ValidationProblemDetails> ( errorContent );
+
+                if (problemDetails?.Errors != null)
+                {
+                    foreach (var error in problemDetails.Errors)
+                    {
+                        foreach (var errorMessage in error.Value)
+                        {
+                            // This adds the error to the appropriate field
+                            ModelState.AddModelError ( error.Key, errorMessage );
+                        }
+                    }
+                }
+            }
+            else
+            {
+                ModelState.AddModelError ( string.Empty, "An unexpected error occurred." );
+            }
 
             return View ( ev );
         }

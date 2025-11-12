@@ -26,7 +26,6 @@ builder.Services.AddTransient<JwtTokenHandler> ();
 builder.Services.AddHttpClient ( "AuthorizedClient" )
     .AddHttpMessageHandler<JwtTokenHandler> ();
 
-
 // Register session services.
 builder.Services.AddDistributedMemoryCache ();
 builder.Services.AddSession ( options =>

@@ -17,7 +17,7 @@
                 <td>@(subject.Employee != null ? subject.Employee.FirstName + " " + subject.Employee.LastName : "Not Assigned")</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@subject.Id" class="btn btn-warning">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@subject.Id" class="btn btn-danger">Delete</a>
+                    @* <a asp-action="Delete" asp-route-id="@subject.Id" class="btn btn-danger">Delete</a> *@
                 </td>
             </tr>
         }

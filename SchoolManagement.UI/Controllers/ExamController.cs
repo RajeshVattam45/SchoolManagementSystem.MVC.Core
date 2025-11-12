@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using SchoolManagement.Core.Entites.Models;
 using SchoolManagement.UI.Filter;
+using System.ComponentModel.DataAnnotations;
 using System.Net.Http;
 using System.Text;
 
@@ -16,11 +17,13 @@ namespace SchoolManagement.UI.Controllers
         private readonly HttpClient _httpClient;
         private readonly string apiBaseUrl = "https://localhost:7230/api/ExamApi";
 
-        // Constructor to initialize HttpClient through dependency injection.
+        private readonly string _examTypeApiUrl = "https://localhost:7230/api/ExamTypeApi";
+        private readonly string _subjectApiUrl = "https://localhost:7230/api/SubjectApi";
+        private readonly string _examSubjectApiUrl = "https://localhost:7230/api/ExamSubjectApi";
+
         public ExamController ( IHttpClientFactory httpClientFactory )
         {
             _httpClient = httpClientFactory.CreateClient ( "AuthorizedClient" );
-
         }
 
         // GET: Exam/Index
@@ -39,32 +42,78 @@ namespace SchoolManagement.UI.Controllers
         // Displays the exam creation form with exam types dropdown.
         public async Task<IActionResult> Create ( )
         {
-            // Fetch available exam types from API
-            var examTypeResponse = await _httpClient.GetStringAsync ( "https://localhost:7230/api/ExamTypeApi" );
-            var examTypes = JsonConvert.DeserializeObject<List<ExamType>> ( examTypeResponse );
+            var examTypes = JsonConvert.DeserializeObject<List<ExamType>> (
+                await _httpClient.GetStringAsync ( _examTypeApiUrl )
+            );
 
-            // Populate ViewBag with exam types for dropdown selection.
+            var subjects = JsonConvert.DeserializeObject<List<Subject>> (
+                await _httpClient.GetStringAsync ( _subjectApiUrl )
+            );
+
+            var model = new ExamCreateViewModel
+            {
+                Subjects = subjects.Select ( s => new SelectListItem
+                {
+                    Value = s.Id.ToString (),
+                    Text = s.SubjectName
+                } ).ToList ()
+            };
+
             ViewBag.ExamTypes = new SelectList ( examTypes, "Id", "ExamTypeName" );
-            return View ();
+            return View ( model );
         }
 
-        // POST: Exam/Create
-        // Submits the form data to create a new exam.
         [HttpPost]
-        public async Task<IActionResult> Create ( Exam exam )
+        public async Task<IActionResult> Create ( ExamCreateViewModel model )
         {
-            if (!ModelState.IsValid) return View ( exam );
-
-            var jsonData = JsonConvert.SerializeObject ( exam );
-            var content = new StringContent ( jsonData, Encoding.UTF8, "application/json" );
-
-            var response = await _httpClient.PostAsync ( apiBaseUrl, content );
-            if (response.IsSuccessStatusCode)
+            if (!ModelState.IsValid)
             {
-                return RedirectToAction ( nameof ( Index ) );
+                var examTypes = JsonConvert.DeserializeObject<List<ExamType>> (
+                    await _httpClient.GetStringAsync ( _examTypeApiUrl )
+                );
+
+                var subjects = JsonConvert.DeserializeObject<List<Subject>> (
+                    await _httpClient.GetStringAsync ( _subjectApiUrl )
+                );
+
+                ViewBag.ExamTypes = new SelectList ( examTypes, "Id", "ExamTypeName" );
+                model.Subjects = subjects.Select ( s => new SelectListItem
+                {
+                    Value = s.Id.ToString (),
+                    Text = s.SubjectName
+                } ).ToList ();
+
+                return View ( model );
             }
 
-            return View ( exam );
+            // Create Exam
+            var examJson = JsonConvert.SerializeObject ( model.Exam );
+            var examContent = new StringContent ( examJson, Encoding.UTF8, "application/json" );
+            var examResponse = await _httpClient.PostAsync ( apiBaseUrl, examContent );
+
+            if (!examResponse.IsSuccessStatusCode)
+                return View ( model );
+
+            var createdExam = JsonConvert.DeserializeObject<Exam> (
+                await examResponse.Content.ReadAsStringAsync ()
+            );
+
+            // Assign subjects to exam
+            foreach (var subjectId in model.SelectedSubjectIds)
+            {
+                var examSubject = new ExamSubject
+                {
+                    ExamId = createdExam.ExamId,
+                    SubjectId = subjectId
+                };
+
+                var examSubjectJson = JsonConvert.SerializeObject ( examSubject );
+                var examSubjectContent = new StringContent ( examSubjectJson, Encoding.UTF8, "application/json" );
+
+                await _httpClient.PostAsync ( _examSubjectApiUrl, examSubjectContent );
+            }
+
+            return RedirectToAction ( nameof ( Index ) );
         }
 
         // GET: Exam/Edit/{id}
@@ -120,15 +169,48 @@ namespace SchoolManagement.UI.Controllers
         // POST: Exam/DeleteConfirmed/{id}
         // Deletes the specified exam.
         [HttpPost, ActionName ( "Delete" )]
-        public async Task<IActionResult> DeleteConfirmed ( int id )
+        public async Task<IActionResult> DeleteConfirmed ( int examId )
         {
-            var response = await _httpClient.DeleteAsync ( $"{apiBaseUrl}/{id}" );
-            if (response.IsSuccessStatusCode)
+            try
             {
-                return RedirectToAction ( nameof ( Index ) );
-            }
+                var response = await _httpClient.DeleteAsync ( $"https://localhost:7230/api/ExamApi/{examId}" );
 
-            return NotFound ();
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction ( nameof ( Index ) );
+                }
+
+                var errorDetails = await response.Content.ReadAsStringAsync ();
+
+                // Check for foreign key violation
+                if (errorDetails.Contains ( "REFERENCE constraint" ))
+                {
+                    ViewBag.ErrorMessage = "Unable to delete this exam because it is linked to student marks. Please delete the related marks first.";
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = "Unable to delete the exam. An unexpected error occurred.";
+                }
+
+                // Redisplay the delete view with error
+                return View ( "Delete", new Exam { ExamId = examId } );
+            }
+            catch (Exception)
+            {
+                ViewBag.ErrorMessage = "A server error occurred while trying to delete the exam. Please try again later.";
+                return View ( "Delete", new Exam { ExamId = examId } );
+            }
         }
     }
+
+    public class ExamCreateViewModel
+    {
+        public Exam Exam { get; set; } = new Exam ();
+
+        [Display ( Name = "Subjects" )]
+        public List<int> SelectedSubjectIds { get; set; } = new List<int> ();
+
+        public List<SelectListItem> Subjects { get; set; } = new List<SelectListItem> ();
+    }
+
 }

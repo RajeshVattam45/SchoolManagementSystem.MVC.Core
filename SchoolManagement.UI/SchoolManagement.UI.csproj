@@ -12,6 +12,10 @@
 		<ProjectReference Include="..\SchoolManagement.Application\SchoolManagement.Application.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="wwwroot\assets\Images\" />
+	</ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>

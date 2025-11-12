@@ -132,10 +132,9 @@ namespace SchoolManagement.Application.Services
 
         public async Task<byte[]> GenerateStudentDetailsPdfAsync ( int studentId )
         {
-            var student = await _studentRepository.GetStudentByIdAsync ( studentId );
-
-            if (student == null)
-                throw new ArgumentException ( "Student not found" );
+            var viewModel = await _studentRepository.GetStudentWithGuardiansAsync ( studentId );
+            var student = viewModel.Student;
+            var guardians = viewModel.Guardians;
 
             QuestPDF.Settings.License = LicenseType.Community;
 
@@ -148,15 +147,22 @@ namespace SchoolManagement.Application.Services
                     page.PageColor ( Colors.White );
                     page.DefaultTextStyle ( x => x.FontSize ( 12 ).FontFamily ( "Arial" ) );
 
+                    // HEADER
                     page.Header ().Row ( row =>
                     {
-                        row.ConstantItem ( 100 ).Height ( 100 ).Image ( student.ProfileImage );
+                        row.ConstantItem ( 100 ).Column ( imageCol =>
+                        {
+                            if (student.ProfileImage != null)
+                                imageCol.Item ().Image ( student.ProfileImage ).FitWidth ();
+                            else
+                                imageCol.Item ().Text ( "No Image" ).FontColor ( Colors.Grey.Medium );
+                        } );
                         row.RelativeItem ().Column ( col =>
                         {
                             col.Item ().Text ( $"{student.FirstName} {student.LastName}" ).Bold ().FontSize ( 18 );
                             col.Item ().Text ( $"Email: {student.Email}" );
                             col.Item ().Text ( $"Role: Student" );
-                            col.Item ().Text ( $"DOB: {student.DateOfBirth.ToString ( "dd-MM-yyyy" ) ?? "N/A"}" );
+                            col.Item ().Text ( $"DOB: {student.DateOfBirth:dd-MM-yyyy}" );
                             col.Item ().Text ( $"Class: {student.Class?.ClassName ?? "N/A"}" );
                         } );
 
@@ -169,9 +175,10 @@ namespace SchoolManagement.Application.Services
                         } );
                     } );
 
+                    // ADDRESS & PERSONAL INFO
                     page.Content ().PaddingVertical ( 20 ).Column ( col =>
                     {
-                        col.Item ().Text ( "Address & Family Info" ).Bold ().FontSize ( 16 ).FontColor ( Colors.Blue.Medium );
+                        col.Item ().Text ( "Address & Personal Info" ).Bold ().FontSize ( 16 ).FontColor ( Colors.Blue.Medium );
                         col.Item ().LineHorizontal ( 1 ).LineColor ( Colors.Grey.Lighten2 );
 
                         col.Item ().Row ( row =>
@@ -185,16 +192,27 @@ namespace SchoolManagement.Application.Services
                                 left.Item ().Text ( $"Caste: {student.Caste ?? "-"}" );
                                 left.Item ().Text ( $"Blood Group: {student.BloodGroup ?? "-"}" );
                             } );
-
-                            //row.RelativeItem ().Column ( right =>
-                            //{
-                            //    right.Item ().Text ( $"Father's Name: {student.FatherName ?? "-"}" );
-                            //    right.Item ().Text ( $"Father's Phone: {student.FatherPhoneNumber ?? "-"}" );
-                            //    right.Item ().Text ( $"Father's Occupation: {student.FatherOccupation ?? "-"}" );
-                            //    right.Item ().Text ( $"Mother's Name: {student.MotherName ?? "-"}" );
-                            //    right.Item ().Text ( $"Mother's Occupation: {student.MotherOccupation ?? "-"}" );
-                            //} );
                         } );
+
+                        // GUARDIAN INFO
+                        col.Item ().PaddingTop ( 20 ).Text ( "Guardian Information" ).Bold ().FontSize ( 16 ).FontColor ( Colors.Blue.Medium );
+                        col.Item ().LineHorizontal ( 1 ).LineColor ( Colors.Grey.Lighten2 );
+
+                        foreach (var guardian in guardians)
+                        {
+                            col.Item ().Row ( row =>
+                            {
+                                row.RelativeItem ().Column ( gcol =>
+                                {
+                                    gcol.Item ().Text ( $"Name: {guardian.GuardianName}" );
+                                    gcol.Item ().Text ( $"Relation: {guardian.Relationship}" );
+                                    gcol.Item ().Text ( $"Phone: {guardian.PhoneNumber}" );
+                                    gcol.Item ().Text ( $"Occupation: {guardian.Occupation ?? "-"}" );
+                                } );
+                            } );
+
+                            col.Item ().PaddingBottom ( 10 );
+                        }
                     } );
 
                     page.Footer ().AlignCenter ().Text ( $"Generated on: {DateTime.Now:yyyy-MM-dd HH:mm:ss}" );

@@ -17,7 +17,6 @@ namespace SchoolManagement.Core.Entites.Models
         public int? ClassId { get; set; }
         public Class? Class { get; set; }
 
-
         [Required]
         [StringLength ( 50 )]
         public string FeeType { get; set; }

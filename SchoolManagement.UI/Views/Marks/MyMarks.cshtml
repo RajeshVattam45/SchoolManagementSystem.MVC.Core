@@ -1,0 +1,161 @@
+﻿@model List<SchoolManagement.Core.ViewModels.MarksDetailsDto>
+@using System.Linq
+
+<div class="container m-3 p-5">
+    <div class="col-sm-3">
+        @if (ViewBag.NoMarks != null)
+        {
+            <div class="alert alert-info">
+                @ViewBag.NoMarks
+            </div>
+            return;
+        }
+    </div>
+</div>
+
+
+@{
+    var examTypes = Model.Select(m => m.ExamTypeName).Distinct().ToList();
+    var selectedExamType = Context.Request.Query["examType"].ToString();
+    selectedExamType = string.IsNullOrWhiteSpace(selectedExamType) ? examTypes.FirstOrDefault() : selectedExamType;
+
+    var filteredMarks = Model.Where(m => m.ExamTypeName == selectedExamType).ToList();
+
+    var examSummaries = Model
+        .GroupBy(m => m.ExamTypeName)
+        .Select(g =>
+        {
+            var totalMarks = g.Sum(m => m.MarksObtained);
+            var totalMax = g.Sum(m => m.MaxMarks);
+            var avgPercentage = totalMax > 0 ? (double)totalMarks / totalMax * 100 : 0;
+            var hasAnyFail = g.Any(m => ((double)m.MarksObtained / m.MaxMarks) * 100 < 35);
+            return new
+            {
+                ExamType = g.Key,
+                TotalMarks = totalMarks,
+                TotalMax = totalMax,
+                AveragePercentage = avgPercentage,
+                Result = hasAnyFail ? "Fail" : "Pass",
+                BadgeColor = avgPercentage >= 75 ? "bg-success"
+                            : avgPercentage >= 50 ? "bg-warning"
+                            : "bg-danger",
+                ResultColor = hasAnyFail ? "bg-danger" : "bg-success"
+            };
+        })
+        .ToList();
+}
+
+<div class="container p-4">
+    <h2 class="mb-4">📘 My Marks</h2>
+
+    @* 📊 Summary Section *@
+    <h4 class="mt-4 mb-3">📊 Exam Summary</h4>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mb-4">
+        @foreach (var summary in examSummaries)
+        {
+            var badgeColor = summary.AveragePercentage >= 75 ? "bg-success" :
+            summary.AveragePercentage >= 50 ? "bg-warning" : "bg-danger";
+
+            <div class="col">
+                <div class="card h-100 border shadow-sm">
+                    <div class="card-body">
+                        <h6 class="card-title">@summary.ExamType</h6>
+                        <p>Total Marks: <strong>@summary.TotalMarks</strong> / @summary.TotalMax</p>
+                        <p>
+                            <span class="badge @summary.BadgeColor p-2">
+                                Avg %: @summary.AveragePercentage.ToString("F2")%
+                            </span>
+                        </p>
+                        <p>
+                            <span class="badge @summary.ResultColor p-2">
+                                Result: @summary.Result
+                            </span>
+                        </p>
+                        <form method="get" action="/Marks/DownloadPdf" class="mt-2">
+                            <input type="hidden" name="examType" value="@summary.ExamType" />
+                            <button type="submit" class="btn btn-outline-primary btn-sm">
+                                📥 Download PDF
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @* 🔽 Exam Type Filter *@
+    <form method="get" class="mb-4 row g-2 align-items-center">
+        <div class="col-auto">
+            <label for="examType" class="col-form-label fw-semibold">Filter by Exam Type:</label>
+        </div>
+        <div class="col-auto">
+            <select id="examType" name="examType" class="form-select" onchange="this.form.submit()">
+                @foreach (var examType in examTypes)
+                {
+                    <option value="@examType" selected="@(examType == selectedExamType)">
+                        @examType
+                    </option>
+                }
+            </select>
+        </div>
+    </form>
+
+    @* 🧾 Filtered Marks View *@
+    @if (!filteredMarks.Any())
+    {
+        <div class="alert alert-warning">No marks found for <strong>@selectedExamType</strong>.</div>
+    }
+    else
+    {
+        var totalMarks = filteredMarks.Sum(m => m.MarksObtained);
+        var totalMax = filteredMarks.Sum(m => m.MaxMarks);
+        var averagePercentage = totalMax > 0 ? (double)totalMarks / totalMax * 100 : 0;
+        var hasAnyFail = filteredMarks.Any(m => ((double)m.MarksObtained / m.MaxMarks) * 100 < 35);
+        var overallResult = hasAnyFail ? "Fail" : "Pass";
+        var resultBadgeClass = hasAnyFail ? "bg-danger" : "bg-success";
+
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">@selectedExamType Results</h5>
+                <span class="badge @resultBadgeClass p-2">@overallResult</span>
+            </div>
+            <div class="card-body">
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                    @foreach (var mark in filteredMarks)
+                    {
+                        var percentage = (double)mark.MarksObtained / mark.MaxMarks * 100;
+                        var progressColor = percentage >= 75 ? "bg-success" :
+                        percentage >= 50 ? "bg-warning" : "bg-danger";
+
+                        <div class="col">
+                            <div class="card h-100 border shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="card-title">@mark.SubjectName</h6>
+                                    <p class="card-subtitle text-muted mb-2">@mark.ExamName</p>
+                                    <p><strong>@mark.MarksObtained</strong> / @mark.MaxMarks</p>
+                                    <div class="progress mb-2">
+                                        <div class="progress-bar @progressColor"
+                                             style="width: @percentage% "
+                                             role="progressbar"
+                                             aria-valuenow="@percentage"
+                                             aria-valuemin="0"
+                                             aria-valuemax="100">
+                                            @($"{percentage:F1}%")
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="mt-4 border-top pt-3">
+                    <h6>Overall Summary:</h6>
+                    <p><strong>Total:</strong> @totalMarks / @totalMax</p>
+                    <p><strong>Average %:</strong> @averagePercentage.ToString("F2")%</p>
+                    <p><strong>Result:</strong> <span class="badge @resultBadgeClass">@overallResult</span></p>
+                </div>
+            </div>
+        </div>
+    }
+</div>

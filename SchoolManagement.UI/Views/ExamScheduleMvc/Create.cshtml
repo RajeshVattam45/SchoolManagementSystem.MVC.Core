@@ -4,6 +4,7 @@
 @{
     ViewData["Title"] = "Create Exam Schedule";
 }
+@Html.ValidationSummary(false, "", new { @class = "text-danger mb-3" })
 
 <div class="container py-4">
     <h2 class="mb-4 text-primary fw-bold">
@@ -13,11 +14,19 @@
     <form asp-action="Create" method="post" class="needs-validation" novalidate>
         <div class="row g-4">
             <!-- Exam Dropdown -->
-            <div class="col-md-4">
-                <label asp-for="ExamId" class="form-label">Exam</label>
+            <div class="col-md-4 position-relative">
+                <label for="examSearchInput" class="form-label">Exam</label>
+
+                <!-- Search input -->
+                <input type="text" id="examSearchInput" class="form-control mb-1" placeholder="Search Exams..." autocomplete="off" />
+
+                <!-- Visible select (not hidden anymore) -->
                 <select asp-for="ExamId" class="form-select" asp-items="ViewBag.ExamList" id="ExamId">
                     <option value="">-- Select Exam --</option>
                 </select>
+
+                <ul id="examResults" class="list-group position-absolute w-100" style="z-index: 1000; max-height: 200px; overflow-y: auto; display: none;"></ul>
+
                 <span asp-validation-for="ExamId" class="text-danger small"></span>
             </div>
 
@@ -88,23 +97,77 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const examSelect = document.querySelector('#ExamId');
-            const subjectSelect = document.querySelector('#SubjectId');
-            const loadingIndicator = document.querySelector('#subjectLoading');
+            const input = document.getElementById('examSearchInput');
+            const dropdownList = document.getElementById('examResults');
+            const select = document.getElementById('ExamId');
 
-            examSelect.addEventListener('change', function () {
-                const selectedExamId = this.value;
+            const allOptions = Array.from(select.options)
+                .filter(opt => opt.value !== "")
+                .map(opt => ({ text: opt.text, value: opt.value }));
+
+            // When user types in search box
+            input.addEventListener('input', function () {
+                const keyword = this.value.toLowerCase();
+                dropdownList.innerHTML = '';
+
+                if (!keyword) {
+                    dropdownList.style.display = 'none';
+                    return;
+                }
+
+                const matches = allOptions.filter(opt => opt.text.toLowerCase().includes(keyword));
+
+                if (matches.length === 0) {
+                    dropdownList.innerHTML = '<li class="list-group-item text-muted">No matches found</li>';
+                } else {
+                    matches.forEach(opt => {
+                        const li = document.createElement('li');
+                        li.textContent = opt.text;
+                        li.classList.add('list-group-item', 'list-group-item-action');
+                        li.style.cursor = 'pointer';
+
+                        li.onclick = () => {
+                            input.value = opt.text;
+                            select.value = opt.value;
+                            select.dispatchEvent(new Event('change'));
+                            dropdownList.style.display = 'none';
+                        };
+
+                        dropdownList.appendChild(li);
+                    });
+                }
+
+                dropdownList.style.display = 'block';
+            });
+
+            // Hide search results when clicking outside
+            document.addEventListener('click', function (e) {
+                if (!dropdownList.contains(e.target) && e.target !== input) {
+                    dropdownList.style.display = 'none';
+                }
+            });
+
+            // When user manually selects from dropdown
+            select.addEventListener('change', function () {
+                const selected = this.options[this.selectedIndex];
+                input.value = selected.text; // Sync to input
+                loadSubjects(selected.value); // Trigger subject fetch
+            });
+
+            // Load subjects function
+            function loadSubjects(examId) {
+                const subjectSelect = document.getElementById('SubjectId');
+                const loadingIndicator = document.getElementById('subjectLoading');
+
                 subjectSelect.innerHTML = '<option value="">-- Select Subject --</option>';
 
-                if (!selectedExamId) return;
+                if (!examId) return;
 
                 loadingIndicator.style.display = 'inline';
+                subjectSelect.disabled = true;
 
-                fetch(`/ExamScheduleMvc/GetSubjectsByExamId?examId=${selectedExamId}`)
-                    .then(response => {
-                        if (!response.ok) throw new Error('Network error');
-                        return response.json();
-                    })
+                fetch(`/ExamScheduleMvc/GetSubjectsByExamId?examId=${examId}`)
+                    .then(res => res.json())
                     .then(data => {
                         data.forEach(subject => {
                             const option = document.createElement('option');
@@ -113,14 +176,12 @@
                             subjectSelect.appendChild(option);
                         });
                     })
-                    .catch(err => {
-                        alert("Failed to load subjects. Please try again.");
-                        console.error(err);
-                    })
+                    .catch(() => alert("Failed to load subjects."))
                     .finally(() => {
                         loadingIndicator.style.display = 'none';
+                        subjectSelect.disabled = false;
                     });
-            });
+            }
         });
     </script>
 }

@@ -17,106 +17,108 @@
     .ToList();
 
 }
+<div class="container-fluid mt-4 p-2">
+    <h2 class="text-primary">Student Attendance</h2>
 
-<h2 class="text-primary">Student Attendance</h2>
+    <!-- Update Message -->
+    <div id="updateMessage" class="alert alert-info d-none" role="alert"></div>
 
-<!-- Update Message -->
-<div id="updateMessage" class="alert alert-info d-none" role="alert"></div>
+    <!-- Date Filter Form -->
+    <form method="get" class="row mb-4">
+        <div class="col-md-3">
+            <label class="form-label fw-bold">Start Date:</label>
+            <input type="date" name="startDate" class="form-control"
+                   value="@startDateValue.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-bold">End Date:</label>
+            <input type="date" name="endDate" class="form-control"
+                   value="@endDateValue.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary me-2">Filter</button>
+            <a href="@Url.Action("Index", "StudentAttendance")" class="btn btn-secondary">Remove Filter</a>
+        </div>
+    </form>
 
-<!-- Date Filter Form -->
-<form method="get" class="row mb-4">
-    <div class="col-md-3">
-        <label class="form-label fw-bold">Start Date:</label>
-        <input type="date" name="startDate" class="form-control"
-               value="@startDateValue.ToString("yyyy-MM-dd")" />
+    <!-- Class Filter Dropdown -->
+    <div class="mb-3">
+        <label for="classFilter" class="form-label fw-bold">Filter by Class:</label>
+        <select class="form-control" id="classFilter">
+            <option value="">-- All Class --</option>
+            @foreach (var className in ViewBag.AllClasses as List<string>)
+            {
+                <option value="@className">@className</option>
+            }
+        </select>
     </div>
-    <div class="col-md-3">
-        <label class="form-label fw-bold">End Date:</label>
-        <input type="date" name="endDate" class="form-control"
-               value="@endDateValue.ToString("yyyy-MM-dd")" />
-    </div>
-    <div class="col-md-3 d-flex align-items-end">
-        <button type="submit" class="btn btn-primary me-2">Filter</button>
-        <a href="@Url.Action("Index", "StudentAttendance")" class="btn btn-secondary">Remove Filter</a>
-    </div>
-</form>
 
-<!-- Class Filter Dropdown -->
-<div class="mb-3">
-    <label for="classFilter" class="form-label fw-bold">Filter by Class:</label>
-    <select class="form-control" id="classFilter">
-        <option value="">-- All Class --</option>
-        @foreach (var className in ViewBag.AllClasses as List<string>)
+    <!-- Attendance Tables -->
+    <div id="attendanceTables">
+        @foreach (var classGroup in sortedClasses)
         {
-            <option value="@className">@className</option>
-        }
-    </select>
-</div>
+            <div class="attendance-table card shadow p-3 mb-4" data-class="@classGroup.Key">
+                <h3 class="text-secondary">@classGroup.Key</h3>
+                <div class="table-responsive" style="overflow-x: auto;">
+                    <table class="table table-bordered table-striped table-hover" style="min-width: max-content;">
 
-<!-- Attendance Tables -->
-<div id="attendanceTables">
-    @foreach (var classGroup in sortedClasses)
-    {
-        <div class="attendance-table card shadow p-3 mb-4" data-class="@classGroup.Key">
-            <h3 class="text-secondary">@classGroup.Key</h3>
-            <div class="table-responsive" style="overflow-x: auto;">
-                <table class="table table-bordered table-striped table-hover" style="min-width: max-content;">
-
-                <thead class="table-dark">
-                    <tr>
-                        <th>Student Name</th>
-                        @for (var date = startDateValue; date <= endDateValue; date = date.AddDays(1))
-                        {
-                            <th>
-                                @date.ToString("MMM dd")<br />
-                                <small>@date.ToString("ddd")</small>
-                            </th>
-                        }
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var student in classGroup)
-                    {
-                        <tr>
-                            <td class="fw-bold">@student.StudentName</td>
-                            @for (var date = startDateValue; date <= endDateValue; date = date.AddDays(1))
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Student Name</th>
+                                @for (var date = startDateValue; date <= endDateValue; date = date.AddDays(1))
+                                {
+                                    <th>
+                                        @date.ToString("MMM dd")<br />
+                                        <small>@date.ToString("ddd")</small>
+                                    </th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var student in classGroup)
                             {
-                                var record = student.AttendanceRecords
-                                .FirstOrDefault(a => a.Date == date);
-
-                                string status = record?.Status?.ToLower();
-                                bool isPresent = status == "present";
-                                bool isAbsent = status == "absent";
-                                bool isEditable = date <= DateTime.Now && date >= DateTime.Now.AddDays(-7);
-                                bool isHoliday = date.DayOfWeek == DayOfWeek.Sunday;
-
-                                <td class="@(isHoliday ? "bg-warning text-dark text-center fw-bold" : "")">
-                                    @if (isHoliday)
+                                <tr>
+                                    <td class="fw-bold">@student.StudentName</td>
+                                    @for (var date = startDateValue; date <= endDateValue; date = date.AddDays(1))
                                     {
-                                        <span>Holiday</span>
-                                    }
-                                    else
-                                    {
-                                        <select class="attendance-status form-select
+                                        var record = student.AttendanceRecords
+                                        .FirstOrDefault(a => a.Date == date);
+
+                                        string status = record?.Status?.ToLower();
+                                        bool isPresent = status == "present";
+                                        bool isAbsent = status == "absent";
+                                        bool isEditable = date <= DateTime.Now && date >= DateTime.Now.AddDays(-7);
+                                        bool isHoliday = date.DayOfWeek == DayOfWeek.Sunday;
+
+                                        <td class="@(isHoliday ? "bg-warning text-dark text-center fw-bold" : "")">
+                                            @if (isHoliday)
+                                            {
+                                                <span>Holiday</span>
+                                            }
+                                            else
+                                            {
+                                                <select class="attendance-status form-select
                 @(isPresent ? "text-white bg-success" : isAbsent ? "text-white bg-danger" : "bg-light")"
-                                                data-id="@record?.Id"
-                                                data-student="@student.Id"
-                                                data-date="@date.ToString("yyyy-MM-dd")"
-                                        @(isEditable ? "" : "disabled")>
-                                            <option value="" class="bg-light">-- Select --</option>
-                                            <option value="Present" class="bg-success text-white" selected="@(isPresent ? "selected" : null)">Present</option>
-                                            <option value="Absent" class="bg-danger text-white" selected="@(isAbsent ? "selected" : null)">Absent</option>
-                                        </select>
+                                                        data-id="@record?.Id"
+                                                        data-student="@student.Id"
+                                                        data-date="@date.ToString("yyyy-MM-dd")"
+                                                @(isEditable ? "" : "disabled")>
+                                                    <option value="" class="bg-light">-- Select --</option>
+                                                    <option value="Present" class="bg-success text-white" selected="@(isPresent ? "selected" : null)">Present</option>
+                                                    <option value="Absent" class="bg-danger text-white" selected="@(isAbsent ? "selected" : null)">Absent</option>
+                                                </select>
+                                            }
+                                        </td>
                                     }
-                                </td>
+                                </tr>
                             }
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-        </div>
-    }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+
 </div>
 
 <script src="~/js/student-attendance.js"></script>

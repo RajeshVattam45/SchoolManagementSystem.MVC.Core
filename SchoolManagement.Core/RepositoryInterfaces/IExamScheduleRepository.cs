@@ -11,6 +11,8 @@ namespace SchoolManagement.Core.RepositoryInterfaces
         void Update ( ExamSchedule schedule );
         void Delete ( ExamSchedule schedule );
         Task SaveChangesAsync ( );
-
+        Task AddRangeAsync ( List<ExamSchedule> schedules );
+        Task<Exam> GetExamWithTypeAsync ( int examId );
+        Task<IEnumerable<ExamSchedule>> GetByClassAndDateAsync ( int classId, DateTime examDate );
     }
 }
